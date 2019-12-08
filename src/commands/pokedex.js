@@ -127,17 +127,13 @@ exports.run = async (client, msg, args) => {
             }
           }
           if (low < 9999 && high > 0) {
-            result =
-              result +
-              'Level **' +
-              l +
-              '**  CP: **' +
-              cp +
-              '**  IV: **' +
-              low +
-              '% - ' +
-              high +
-              '%** \\n';
+            result = result + 'Level **' + l + '**  CP: **' + cp + '**  IV: **';
+            if (low == high) {
+              result = result + low + '%';
+            } else {
+              result = result + low + '% - ' + high + '%';
+            }
+            result = result + '** \\n';
           }
         }
       } else {
