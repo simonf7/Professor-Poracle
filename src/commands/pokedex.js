@@ -2,21 +2,26 @@ const fetch = require('node-fetch');
 const pokemonGif = require('pokemon-gif');
 const typeData = require('../../config/types.json');
 exports.run = async (client, msg, args) => {
+  args = args.map((arg) => arg.replace('alolan', 'formalola'));
+  args = args.map((arg) => arg.replace('galarian', 'formgalarian'));
+
   const formNames = args
-    .filter(arg => arg.match(/form\S/gi))
-    .map(arg => arg.replace('form', ''));
+    .filter((arg) => arg.match(/form\S/gi))
+    .map((arg) => arg.replace('form', ''));
+
+  console.log(args);
 
   try {
     // find the target pokemon
     let monsters = formNames.length
       ? Object.values(client.monsters).filter(
-          mon =>
+          (mon) =>
             (args.includes(mon.name.toLowerCase()) ||
               args.includes(mon.id.toString())) &&
             formNames.includes(mon.form.name.toLowerCase())
         )
       : Object.values(client.monsters).filter(
-          mon =>
+          (mon) =>
             (args.includes(mon.name.toLowerCase()) ||
               args.includes(mon.id.toString())) &&
             mon.form.id === 0
@@ -31,7 +36,7 @@ exports.run = async (client, msg, args) => {
     let level = 40;
     let cp = null;
 
-    args.forEach(arg => {
+    args.forEach((arg) => {
       if (arg.match(/atk\d{1,2}/gi))
         atk = +arg.match(/atk\d{1,2}/gi)[0].replace(/atk/gi, '');
       else if (arg.match(/def\d{1,2}/gi))
@@ -44,15 +49,15 @@ exports.run = async (client, msg, args) => {
         cp = +arg.match(/cp\d{1,4}/gi)[0].replace(/cp/gi, '');
     });
 
-    client.asyncForEach(monsters, async mon => {
+    client.asyncForEach(monsters, async (mon) => {
       let { description, art_url } = client.descriptions.find(
-        desc => desc.pkdx_id === mon.id
+        (desc) => desc.pkdx_id === mon.id
       );
       description = description ? description : '';
       art_url = art_url ? art_url : '';
-      let types = mon.types.map(type => type.name);
+      let types = mon.types.map((type) => type.name);
       let typeString = mon.types.map(
-        type => `${typeData[type.name].emoji} ${type.name}`
+        (type) => `${typeData[type.name].emoji} ${type.name}`
       );
       const allWeakness = client.pokeTypes.getTypeWeaknesses.apply(null, types);
       let allStrenght = {};
@@ -61,9 +66,9 @@ exports.run = async (client, msg, args) => {
       let superWeakness = [];
       let ultraWeakness = [];
 
-      types.forEach(type => {
+      types.forEach((type) => {
         let strengths = client.pokeTypes.getTypeStrengths(type);
-        Object.keys(strengths).forEach(type => {
+        Object.keys(strengths).forEach((type) => {
           if (strengths[type] > allStrenght[type] || !allStrenght[type])
             allStrenght[type] = strengths[type];
         });
@@ -188,7 +193,7 @@ exports.run = async (client, msg, args) => {
         lo20,
         hi20,
         lo25,
-        hi25
+        hi25,
       };
 
       const template = JSON.stringify(client.dts.monster);
