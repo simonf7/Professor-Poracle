@@ -10,5 +10,10 @@
         "name": "{{{name}}}"
       }
     }
+  },
+  "status": {
+    "embed": {
+      "description": "**{{username}} Status**\nLast start: {{ready}}\nLast pings (ms): {{pings}}"
+    }
   }
 }
