@@ -9,8 +9,6 @@ exports.run = async (client, msg, args) => {
     .filter((arg) => arg.match(/form\S/gi))
     .map((arg) => arg.replace('form', ''));
 
-  console.log(args);
-
   try {
     // find the target pokemon
     let monsters = formNames.length
