@@ -1,12 +1,18 @@
-module.exports = (client, msg) => {
-  // Ignore all bots
+module.exports = async (client, msg) => {
+  // Ignore all bots apart from Meowth
   if (msg.author.bot) {
     if (msg.author.id == '346759953006198784') {
       console.log('msg.id = ' + msg.id);
       msg.embeds.forEach((embed) => {
-        embed.fields.forEach((field) => {
+        embed.fields.forEach(async (field) => {
           if (field.name == 'Gym') {
-            console.log(field);
+            const gymId = await client.gymUtils.findGym(client, field.value);
+            console.log(field.value + ' = ' + gymId);
+            console.log('msg.channel.id = ' + msg.channel.id);
+            console.log(client.watching);
+            if (gymId > -1 && client.watching[msg.channel.id] == null) {
+              client.watching[msg.channel.id] = gymId;
+            }
           }
         });
       });

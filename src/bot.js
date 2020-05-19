@@ -20,6 +20,7 @@ const descriptions = require('./util/description');
 const dts = require('./util/message');
 const client = new Client();
 const monsterUtils = require('./util/monster_utils');
+const gymUtils = require('./util/gym_utils');
 const migrations = require('./util/migrations');
 const pool = require('./util/database');
 
@@ -58,11 +59,12 @@ async function main() {
   client.descriptions = descriptions;
   client.pokeTypes = pokeTypes;
   client.monsterUtils = monsterUtils;
+  client.gymUtils = gymUtils;
   client.asyncForEach = asyncForEach;
   client.capitalize = capitalize;
   client.pool = pool;
   client.watching = [];
-  client.emoji = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫'];
+  client.emoji = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭'];
 
   client.dbVersion = await migrations.migrate(client);
 

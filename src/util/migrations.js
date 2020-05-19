@@ -52,7 +52,7 @@ const migrate = async function (client) {
     });
   });
 
-  return getVersion(client);
+  return await getVersion(client);
 };
 
 module.exports = {

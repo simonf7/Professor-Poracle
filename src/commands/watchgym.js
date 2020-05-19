@@ -1,45 +1,36 @@
-const asyncForEach = async (array, callback) => {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-};
-
 exports.run = async (client, msg, args) => {
-  args = args.map((arg) => "`name` LIKE '%" + arg + "%'");
+  const gymId = await client.gymUtils.selectGym(client, msg, args);
 
-  const rows = await client.pool.query(
-    'SELECT gym_id, name FROM gymdetails WHERE ' + args.join(' AND ')
-  );
+  if (gymId != -1) {
+    let operation = '';
+    const current = await client.pool.query(
+      "SELECT * FROM dex_users WHERE `user_id`='" +
+        msg.author.id +
+        "' AND `gym_id`='" +
+        gymId +
+        "'"
+    );
+    if (current.length > 0) {
+      const result = await client.pool.query(
+        "DELETE FROM dex_users WHERE `user_id`='" +
+          msg.author.id +
+          "' AND `gym_id`='" +
+          gymId +
+          "'"
+      );
+      operation = '-';
+    } else {
+      const result = await client.pool.query(
+        "INSERT INTO dex_users (`user_id`, `gym_id`) VALUES ('" +
+          msg.author.id +
+          "','" +
+          gymId +
+          "')"
+      );
+      operation = '+';
+    }
+    const text = operation + (await client.gymUtils.gymName(client, gymId));
 
-  let gymId = -1;
-  if (rows.length == 1) {
-    gymId = rows[0].gym_id;
-  } else {
-    let text = '';
-    rows.forEach((gym, i) => {
-      text = text + '\n' + client.emoji[i] + ': ' + gym.name;
-    });
-    let message = await msg.reply(text);
-    asyncForEach(rows, async (gym, i) => {
-      await message.react(client.emoji[i]);
-    });
-
-    await message
-      .awaitReactions(
-        (reaction, user) =>
-          user.id == msg.author.id &&
-          client.emoji.indexOf(reaction.emoji.name) >= 0 &&
-          client.emoji.indexOf(reaction.emoji.name) < rows.length,
-        { max: 1, time: 30000 }
-      )
-      .then((collected) => {
-        gymId = rows[client.emoji.indexOf(collected.first().emoji.name)].gym_id;
-        message.delete();
-      })
-      .catch(() => {
-        message.delete();
-      });
+    msg.reply({ embed: { description: text } });
   }
-
-  msg.reply(gymId);
 };

@@ -26,6 +26,10 @@
         {
           "name": "Database version",
           "value": "{{dbVersion}}"
+        },
+        {
+          "name": "Watching channels",
+          "value": "{{watching}}"
         }
       ]
     }
