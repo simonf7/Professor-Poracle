@@ -1,6 +1,18 @@
 module.exports = (client, msg) => {
   // Ignore all bots
-  if (msg.author.bot) return;
+  if (msg.author.bot) {
+    if (msg.author.id == '346759953006198784') {
+      console.log('msg.id = ' + msg.id);
+      msg.embeds.forEach((embed) => {
+        embed.fields.forEach((field) => {
+          if (field.name == 'Gym') {
+            console.log(field);
+          }
+        });
+      });
+    }
+    return;
+  }
 
   // Ignore msgs not starting with the prefix (in config)
   if (!msg.content.startsWith(client.config.discord.prefix)) return;

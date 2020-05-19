@@ -1,10 +1,11 @@
-var moment = require('moment'); // require
+const moment = require('moment'); // require
 
 exports.run = async (client, msg, args) => {
   const view = {
     username: client.user.username,
     ready: moment(client.readyAt).fromNow(),
     pings: client.pings,
+    dbVersion: client.dbVersion,
   };
 
   const template = JSON.stringify(client.dts.status);

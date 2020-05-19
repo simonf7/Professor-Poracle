@@ -1,4 +1,5 @@
 require('./util/configFileCreator')();
+
 const { Client } = require('discord.js');
 const path = require('path');
 const Enmap = require('enmap');
@@ -19,6 +20,8 @@ const descriptions = require('./util/description');
 const dts = require('./util/message');
 const client = new Client();
 const monsterUtils = require('./util/monster_utils');
+const migrations = require('./util/migrations');
+const pool = require('./util/database');
 
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
@@ -40,7 +43,7 @@ async function main() {
       let { config } = Config();
       client.config = config;
     } catch (err) {
-      console.warn('new config file unhappy', err);
+      console.warn('Config file error: ', err);
     }
   });
 
@@ -57,21 +60,11 @@ async function main() {
   client.monsterUtils = monsterUtils;
   client.asyncForEach = asyncForEach;
   client.capitalize = capitalize;
+  client.pool = pool;
+  client.watching = [];
+  client.emoji = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫'];
 
-  const mysql = require('mysql').createConnection({
-    host: config.database.host,
-    user: config.database.user,
-    password: config.database.password,
-    database: config.database.database,
-  });
-
-  await mysql.connect((err) => {
-    if (err) {
-      throw err;
-    }
-  });
-  client.mysql = mysql;
-  console.log('Connected to database');
+  client.dbVersion = await migrations.migrate(client);
 
   fs.readdir(`${__dirname}/events/`, (err, files) => {
     if (err) return log.error(err);

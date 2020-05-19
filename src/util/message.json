@@ -13,7 +13,21 @@
   },
   "status": {
     "embed": {
-      "description": "**{{username}} Status**\nLast start: {{ready}}\nLast pings (ms): {{pings}}"
+      "title": "{{username}} Status",
+      "fields": [
+        {
+          "name": "Last start",
+          "value": "{{ready}}"
+        },
+        {
+          "name": "Last pings (ms)",
+          "value": "{{pings}}"
+        },
+        {
+          "name": "Database version",
+          "value": "{{dbVersion}}"
+        }
+      ]
     }
   }
 }
