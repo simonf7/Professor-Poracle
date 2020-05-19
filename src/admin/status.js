@@ -10,6 +10,9 @@ exports.run = async (client, msg, args) => {
       watching = watching + ' (' + client.watching[key] + ')';
     }
   }
+  if (watching == '') {
+    watching = 'None';
+  }
 
   const view = {
     username: client.user.username,

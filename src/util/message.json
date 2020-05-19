@@ -28,7 +28,7 @@
           "value": "{{dbVersion}}"
         },
         {
-          "name": "Watching channels",
+          "name": "Active channels",
           "value": "{{watching}}"
         }
       ]

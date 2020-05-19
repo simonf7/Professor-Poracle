@@ -1,7 +1,10 @@
 module.exports = async (client, msg) => {
   // Ignore all bots apart from Meowth
   if (msg.author.bot) {
-    if (msg.author.id == '346759953006198784') {
+    if (
+      client.config.discord.meowth.indexOf(msg.author.id) >= 0 &&
+      client.config.discord.categories.indexOf(msg.channel.id) >= 0
+    ) {
       console.log('msg.id = ' + msg.id);
       msg.embeds.forEach((embed) => {
         embed.fields.forEach(async (field) => {
@@ -9,9 +12,22 @@ module.exports = async (client, msg) => {
             const gymId = await client.gymUtils.findGym(client, field.value);
             console.log(field.value + ' = ' + gymId);
             console.log('msg.channel.id = ' + msg.channel.id);
-            console.log(client.watching);
-            if (gymId > -1 && client.watching[msg.channel.id] == null) {
+            console.log(
+              'client.watching[] = ' + client.watching[msg.channel.id]
+            );
+            if (gymId != -1 && client.watching[msg.channel.id] === null) {
               client.watching[msg.channel.id] = gymId;
+
+              const results = await client.pool.query(
+                "SELECT user_id FROM dex_users WHERE gym_id='" + gymId + "'"
+              );
+              if (results.length > 0) {
+                results.forEach((r) => {
+                  client.fetchUser(r.user_id, false).then((user) => {
+                    user.send('Raid reported <#' + msg.channel.id + '>');
+                  });
+                });
+              }
             }
           }
         });

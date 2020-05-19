@@ -16,6 +16,10 @@ const gymName = async (client, gym_id) => {
 };
 
 const selectGym = async (client, msg, args) => {
+  args = args.filter((arg) => arg.length > 2);
+  if (args.length == 0) {
+    return -1;
+  }
   args = args.map((arg) => "`name` LIKE '%" + arg.replace("'", "\\'") + "%'");
 
   const rows = await client.pool.query(
@@ -25,16 +29,18 @@ const selectGym = async (client, msg, args) => {
   let gymId = -1;
   if (rows.length == 1) {
     gymId = rows[0].gym_id;
-  } else {
+  } else if (rows.length < client.emoji.length) {
     let text = '';
     rows.forEach((gym, i) => {
-      text = text + '\n' + client.emoji[i] + ': ' + gym.name;
+      text = text + client.emoji[i] + ': ' + gym.name + '\n';
     });
+    text = text + client.emojiQ + ': Unknown';
 
     const message = await msg.reply({ embed: { description: text } });
-    asyncForEach(rows, async (gym, i) => {
+    await asyncForEach(rows, async (gym, i) => {
       await message.react(client.emoji[i]);
     });
+    await message.react(client.emojiQ);
 
     await message
       .awaitReactions(

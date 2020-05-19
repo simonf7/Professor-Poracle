@@ -64,8 +64,35 @@ async function main() {
   client.capitalize = capitalize;
   client.pool = pool;
   client.watching = [];
-  client.emoji = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭'];
-
+  client.emoji = [
+    '🇦',
+    '🇧',
+    '🇨',
+    '🇩',
+    '🇪',
+    '🇫',
+    '🇬',
+    '🇭',
+    '🇮',
+    '🇯',
+    '🇰',
+    '🇱',
+    '🇲',
+    '🇳',
+    '🇴',
+    '🇵',
+    '🇶',
+    '🇷',
+    '🇸',
+    '🇹',
+    '🇺',
+    '🇻',
+    '🇼',
+    '🇽',
+    '🇾',
+    '🇿',
+  ];
+  client.emojiQ = '❔';
   client.dbVersion = await migrations.migrate(client);
 
   fs.readdir(`${__dirname}/events/`, (err, files) => {
