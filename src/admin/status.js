@@ -10,7 +10,7 @@ exports.run = async (client, msg, args) => {
       watching =
         watching +
         ' (' +
-        (await client.gymUtils.gymName(client.watching[key])) +
+        (await client.gymUtils.gymName(client, client.watching[key])) +
         ')';
     }
   }
