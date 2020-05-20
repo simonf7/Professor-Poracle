@@ -9,9 +9,10 @@ module.exports = async (client, msg) => {
         embed.fields.forEach(async (field) => {
           if (field.name == 'Gym') {
             const gymId = await client.gymUtils.findGym(client, field.value);
+            const gymName = await client.gymUtils.gymName(client, gymId);
 
             if (gymId != -1 && client.watching[msg.channel.id] === null) {
-              console.log('Gym recognised: ' + gymId);
+              console.log('Gym recognised: ' + gymName + ' (' + gymId + ')');
               client.watching[msg.channel.id] = gymId;
 
               const results = await client.pool.query(
@@ -20,8 +21,14 @@ module.exports = async (client, msg) => {
               if (results.length > 0) {
                 results.forEach((r) => {
                   client.fetchUser(r.user_id, false).then((user) => {
-                    console.log('Notifying: ' + user.name);
-                    user.send('Raid reported <#' + msg.channel.id + '>');
+                    console.log('Notifying: ' + user.username);
+                    user.send(
+                      'Raid reported at ' +
+                        gymName +
+                        ' <#' +
+                        msg.channel.id +
+                        '>'
+                    );
                   });
                 });
               }
