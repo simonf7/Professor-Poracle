@@ -11,9 +11,7 @@ module.exports = async (client, msg) => {
             const gymId = await client.gymUtils.findGym(client, field.value);
 
             if (gymId != -1 && client.watching[msg.channel.id] === null) {
-              console.log(
-                'Gym recognised: ' + (await client.gymUtils.gymName(gymId))
-              );
+              console.log('Gym recognised: ' + gymId);
               client.watching[msg.channel.id] = gymId;
 
               const results = await client.pool.query(
