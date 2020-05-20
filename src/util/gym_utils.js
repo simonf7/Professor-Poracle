@@ -29,7 +29,7 @@ const selectGym = async (client, msg, args) => {
   let gymId = -1;
   if (rows.length == 1) {
     gymId = rows[0].gym_id;
-  } else if (rows.length < client.emoji.length) {
+  } else if (rows.length > 1 && rows.length < client.emoji.length) {
     let text = '';
     rows.forEach((gym, i) => {
       text = text + client.emoji[i] + ': ' + gym.name + '\n';
