@@ -118,6 +118,10 @@ async function main() {
         enabledCommands.push(`${config.discord.prefix}dex`);
         client.commands.set('dex', props);
       }
+      if (commandName === 'watchgym') {
+        enabledCommands.push(`${config.discord.prefix}watch`);
+        client.commands.set('watch', props);
+      }
     });
 
     console.log('Loading discord commands: ', enabledCommands.join(' '));
