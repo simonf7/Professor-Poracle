@@ -5,17 +5,15 @@ module.exports = async (client, msg) => {
       client.config.discord.meowth.indexOf(msg.author.id) >= 0 &&
       client.config.discord.categories.indexOf(msg.channel.parentID) >= 0
     ) {
-      console.log('msg.id = ' + msg.id);
       msg.embeds.forEach((embed) => {
         embed.fields.forEach(async (field) => {
           if (field.name == 'Gym') {
             const gymId = await client.gymUtils.findGym(client, field.value);
-            console.log(field.value + ' = ' + gymId);
-            console.log('msg.channel.id = ' + msg.channel.id);
-            console.log(
-              'client.watching[] = ' + client.watching[msg.channel.id]
-            );
+
             if (gymId != -1 && client.watching[msg.channel.id] === null) {
+              console.log(
+                'Gym recognised: ' + (await client.gymUtils.gymName(gymId))
+              );
               client.watching[msg.channel.id] = gymId;
 
               const results = await client.pool.query(
@@ -24,6 +22,7 @@ module.exports = async (client, msg) => {
               if (results.length > 0) {
                 results.forEach((r) => {
                   client.fetchUser(r.user_id, false).then((user) => {
+                    console.log('Notifying: ' + user.name);
                     user.send('Raid reported <#' + msg.channel.id + '>');
                   });
                 });

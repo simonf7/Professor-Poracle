@@ -7,7 +7,11 @@ exports.run = async (client, msg, args) => {
 
     watching = watching + (watching != '' ? ', ' : '') + channel.name;
     if (client.watching[key] != null) {
-      watching = watching + ' (' + client.watching[key] + ')';
+      watching =
+        watching +
+        ' (' +
+        (await client.gymUtils.gymName(client.watching[key])) +
+        ')';
     }
   }
   if (watching == '') {
