@@ -47,11 +47,14 @@ const selectGym = async (client, msg, args) => {
         (reaction, user) =>
           user.id == msg.author.id &&
           client.emoji.indexOf(reaction.emoji.name) >= 0 &&
-          client.emoji.indexOf(reaction.emoji.name) < rows.length,
+          client.emoji.indexOf(reaction.emoji.name) <= rows.length,
         { max: 1, time: 30000 }
       )
       .then((collected) => {
-        gymId = rows[client.emoji.indexOf(collected.first().emoji.name)].gym_id;
+        if (collected.first().emoji.name != client.emojiQ) {
+          gymId =
+            rows[client.emoji.indexOf(collected.first().emoji.name)].gym_id;
+        }
         message.delete();
       })
       .catch(() => {
