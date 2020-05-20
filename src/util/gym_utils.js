@@ -51,7 +51,7 @@ const selectGym = async (client, msg, args) => {
         { max: 1, time: 30000 }
       )
       .then((collected) => {
-        if (collected.first().emoji.name != client.emojiQ) {
+        if (client.emoji.indexOf(collected.first().emoji.name) < rows.length) {
           gymId =
             rows[client.emoji.indexOf(collected.first().emoji.name)].gym_id;
         }
