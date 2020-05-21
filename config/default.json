@@ -9,5 +9,8 @@
     "user": "",
     "password": "",
     "database": ""
+  },
+  "mad": {
+    "host": ""
   }
 }

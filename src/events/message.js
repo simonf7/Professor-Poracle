@@ -50,7 +50,8 @@ module.exports = async (client, msg) => {
     .split(/ +/g);
   args = args
     .map((arg) => arg.toLowerCase())
-    .map((arg) => arg.replace(/_/, ' '));
+    .map((arg) => arg.replace(/_/g, ' '));
+
   const command = args.shift().toLowerCase();
   const cmd = client.commands.get(command);
   if (cmd) {
