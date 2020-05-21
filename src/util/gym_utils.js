@@ -69,7 +69,7 @@ const selectGym = async (client, msg, args) => {
 const findGym = async (client, gym) => {
   // extract lon/lat
   const location = gym.match(/[0-9]+[.][0-9]+/g);
-  if (location.length == 2) {
+  if (location && location.length == 2) {
     const result = await client.pool.query(
       "SELECT * FROM gym WHERE `latitude`='" +
         location[0] +
@@ -84,10 +84,10 @@ const findGym = async (client, gym) => {
 
   // get name
   let name = gym.match(/\[(.+)\]/g);
-  if (name.length > 0) {
+  if (name && name.length > 0) {
     name = name[0].match(/[^\[\]]+/g);
   }
-  if (name.length > 0) {
+  if (name && name.length > 0) {
     name = name[0].replace(/ \(EX Raid Gym\)/g, '');
 
     const result = await client.pool.query(
