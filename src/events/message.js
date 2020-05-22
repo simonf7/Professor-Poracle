@@ -11,9 +11,10 @@ module.exports = async (client, msg) => {
             const gymId = await client.gymUtils.findGym(client, field.value);
             const gymName = await client.gymUtils.gymName(client, gymId);
 
-            if (gymId != -1 && client.watching[msg.channel.id] === null) {
+            if (gymId != -1 && client.watching[msg.channel.id].gymId === null) {
               console.log('Gym recognised: ' + gymName + ' (' + gymId + ')');
-              client.watching[msg.channel.id] = gymId;
+              client.watching[msg.channel.id].gymId = gymId;
+              client.watching[msg.channel.id].gymName = gymName;
 
               const results = await client.pool.query(
                 "SELECT user_id FROM dex_users WHERE gym_id='" + gymId + "'"

@@ -10,6 +10,10 @@ module.exports = async (client) => {
   );
   channels.forEach((channel) => {
     console.log('Watching: ' + channel.name);
-    client.watching[channel.id] = null;
+    client.watching[channel.id] = {
+      gymId: null,
+      gymName: null,
+      userIds: [],
+    };
   });
 };

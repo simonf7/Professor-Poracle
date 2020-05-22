@@ -6,12 +6,8 @@ exports.run = async (client, msg, args) => {
     const channel = client.channels.find((c) => c.id == key);
 
     watching = watching + (watching != '' ? ', ' : '') + channel.name;
-    if (client.watching[key] != null) {
-      watching =
-        watching +
-        ' (' +
-        (await client.gymUtils.gymName(client, client.watching[key])) +
-        ')';
+    if (client.watching[key].gymId !== null) {
+      watching = watching + ' (' + client.watching[key].gymName + ')';
     }
   }
   if (watching == '') {

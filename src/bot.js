@@ -135,6 +135,12 @@ async function main() {
       const commandName = file.split('.')[0];
       adminCommands.push(`${config.discord.prefix}${commandName}`);
       client.admin.set(commandName, props);
+      if (props.aliases) {
+        props.aliases().forEach((a) => {
+          adminCommands.push(`${config.discord.prefix}${a}`);
+          client.admin.set(a, props);
+        });
+      }
     });
 
     console.log('Loading admin commands: ', adminCommands.join(' '));

@@ -23,7 +23,10 @@ const selectGym = async (client, msg, args) => {
   args = args.map((arg) => "`name` LIKE '%" + arg.replace("'", "\\'") + "%'");
 
   const rows = await client.pool.query(
-    'SELECT gym_id, name FROM gymdetails WHERE ' + args.join(' AND ')
+    "SELECT gymdetails.gym_id, name, dex_users.user_id FROM gymdetails LEFT JOIN dex_users ON dex_users.gym_id = gymdetails.gym_id AND dex_users.user_id = '" +
+      msg.author.id +
+      "' WHERE " +
+      args.join(' AND ')
   );
 
   let gymId = -1;
@@ -32,7 +35,13 @@ const selectGym = async (client, msg, args) => {
   } else if (rows.length > 1 && rows.length < client.emoji.length) {
     let text = '';
     rows.forEach((gym, i) => {
-      text = text + client.emoji[i] + ': ' + gym.name + '\n';
+      text =
+        text +
+        client.emoji[i] +
+        ': ' +
+        gym.name +
+        (gym.user_id ? ' :eyes:' : '') +
+        '\n';
     });
     text = text + client.emojiQ + ': Unknown';
 
