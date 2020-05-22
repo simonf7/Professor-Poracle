@@ -203,3 +203,7 @@ exports.run = async (client, msg, args) => {
     console.error('Pokedex command unhappy:', err);
   }
 };
+
+exports.aliases = () => {
+  return ['dex'];
+};

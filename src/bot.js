@@ -114,13 +114,11 @@ async function main() {
       const commandName = file.split('.')[0];
       enabledCommands.push(`${config.discord.prefix}${commandName}`);
       client.commands.set(commandName, props);
-      if (commandName === 'pokedex') {
-        enabledCommands.push(`${config.discord.prefix}dex`);
-        client.commands.set('dex', props);
-      }
-      if (commandName === 'watchgym') {
-        enabledCommands.push(`${config.discord.prefix}watch`);
-        client.commands.set('watch', props);
+      if (props.aliases) {
+        props.aliases().forEach((a) => {
+          enabledCommands.push(`${config.discord.prefix}${a}`);
+          client.commands.set(a, props);
+        });
       }
     });
 

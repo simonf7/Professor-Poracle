@@ -34,3 +34,7 @@ exports.run = async (client, msg, args) => {
     msg.reply({ embed: { description: text } });
   }
 };
+
+exports.aliases = () => {
+  return ['watch'];
+};
