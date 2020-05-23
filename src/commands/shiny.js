@@ -24,19 +24,18 @@ exports.run = async (client, msg, args) => {
   fetch(url)
     .then((res) => res.json())
     .then((json) => {
-      let title =
+      let text =
         'Shinies found ' +
         timeFrom.format(timeFormat) +
         ' to ' +
-        timeTo.format(timeFormat);
-      let text = '';
+        timeTo.format(timeFormat) +
+        '\n';
       let mons = json.global_shiny_statistics.sort((a, b) =>
         a.odds < b.odds ? -1 : a.odds > b.odds ? 1 : 0
       );
       mons.forEach((row) => {
-        if (text.length > 2000) {
-          msg.channel.send({ embed: { title: title, description: text } });
-          title = '';
+        if (text.length > 1900) {
+          msg.channel.send(text);
           text = '';
         }
 
@@ -45,13 +44,13 @@ exports.run = async (client, msg, args) => {
         }
         text =
           text +
+          '**' +
           row.name +
-          ': 1/' +
+          '** odds: 1/' +
           row.odds +
-          ' (' +
-          row.count +
-          ' encounters)';
+          ' encounters: ' +
+          row.count;
       });
-      msg.channel.send({ embed: { title: title, description: text } });
+      msg.channel.send(text);
     });
 };
