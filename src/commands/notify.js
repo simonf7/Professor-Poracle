@@ -5,9 +5,10 @@ exports.run = async (client, msg, args) => {
     return;
   }
 
+  let message = null;
   if (client.watching[msg.channel.id].userIds.indexOf(msg.author.id) == -1) {
     client.watching[msg.channel.id].userIds.push(msg.author.id);
-    msg.reply({
+    message = await msg.reply({
       embed: { description: ':white_check_mark: Notifications on' },
     });
     console.log(
@@ -18,12 +19,19 @@ exports.run = async (client, msg, args) => {
       client.watching[msg.channel.id].userIds.indexOf(msg.author.id),
       1
     );
-    msg.reply({
+    message = await msg.reply({
       embed: { description: ':white_check_mark: Notifications off' },
     });
     console.log(
       `${msg.author.username} turned off notifications for ${msg.channel.name}`
     );
+  }
+
+  // auto delete the confirmation after 5 seconds
+  if (message) {
+    setTimeout(() => {
+      message.delete();
+    }, 5000);
   }
 };
 
