@@ -2,8 +2,8 @@ const fetch = require('node-fetch');
 const pokemonGif = require('pokemon-gif');
 const typeData = require('../../config/types.json');
 exports.run = async (client, msg, args) => {
-  args = args.map((arg) => arg.replace('alolan', 'formalola'));
-  args = args.map((arg) => arg.replace('galarian', 'formgalarian'));
+  args = args.map((arg) => arg.replace(/alol.*/gi, 'formalola'));
+  args = args.map((arg) => arg.replace(/gala.*/gi, 'formgalarian'));
 
   const formNames = args
     .filter((arg) => arg.match(/form\S/gi))
@@ -12,18 +12,38 @@ exports.run = async (client, msg, args) => {
   try {
     // find the target pokemon
     let monsters = formNames.length
-      ? Object.values(client.monsters).filter(
-          (mon) =>
-            (args.includes(mon.name.toLowerCase()) ||
-              args.includes(mon.id.toString())) &&
-            formNames.includes(mon.form.name.toLowerCase())
-        )
-      : Object.values(client.monsters).filter(
-          (mon) =>
-            (args.includes(mon.name.toLowerCase()) ||
-              args.includes(mon.id.toString())) &&
-            mon.form.id === 0
-        );
+      ? Object.values(client.monsters).filter((mon) => {
+          if (formNames.includes(mon.form.name.toLowerCase())) {
+            if (args.includes(mon.id.toString())) {
+              return true;
+            }
+            let found = false;
+            args.forEach((a) => {
+              if (a.length > 3 && mon.name.toLowerCase().indexOf(a) == 0) {
+                found = true;
+              }
+            });
+
+            return found;
+          }
+          return false;
+        })
+      : Object.values(client.monsters).filter((mon) => {
+          if (mon.form.id == 0) {
+            if (args.includes(mon.id.toString())) {
+              return true;
+            }
+            let found = false;
+            args.forEach((a) => {
+              if (a.length > 3 && mon.name.toLowerCase().indexOf(a) == 0) {
+                found = true;
+              }
+            });
+
+            return found;
+          }
+          return false;
+        });
 
     // limit responces to 3 pokeman
     if (monsters.length > 3) monsters = monsters.slice(0, 3);
