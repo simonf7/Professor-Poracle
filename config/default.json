@@ -2,15 +2,14 @@
   "discord": {
     "token": "",
     "prefix": "!",
-    "admin": []
+    "admin": [],
+    "meowth": [],
+    "categories": []
   },
   "database": {
     "host": "",
     "user": "",
     "password": "",
     "database": ""
-  },
-  "mad": {
-    "host": ""
   }
 }
