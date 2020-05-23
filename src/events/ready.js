@@ -1,8 +1,19 @@
-module.exports = (client) => {
-	console.log(`Commando "${client.user.tag}" awaiting for orders!`)
-	client.user.setPresence({
-		game: {
-			name: 'Professor Poracle',
-		},
-	})
-}
+module.exports = async (client) => {
+  console.log(`Commando "${client.user.tag}" awaiting for orders!`);
+  client.user.setPresence({
+    game: {
+      name: 'with Meowth',
+    },
+  });
+  const channels = await client.channels.filter(
+    (channel) => client.config.discord.categories.indexOf(channel.parentID) >= 0
+  );
+  channels.forEach((channel) => {
+    console.log('Watching: ' + channel.name);
+    client.watching[channel.id] = {
+      gymId: null,
+      gymName: null,
+      userIds: [],
+    };
+  });
+};

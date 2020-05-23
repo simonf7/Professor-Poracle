@@ -1,18 +1,41 @@
 {
   "monster": {
-
     "embed": {
-      "description": "{{{ description }}} \n\nPokedex: **{{ id }}**  \n\n**Base Stats:** {{baseAtk}}/{{baseDef}}/{{baseSta}} \n\n**Type:** {{{ type }}} \n{{#superWeak}}**Weak against:** {{{ superWeak }}}{{/superWeak}} {{#ultraWeak}}\n**Very weak against:** {{{ultraWeak}}}{{/ultraWeak}} {{#superStrong}}\n**Strong against:** {{{ superStrong }}}{{/superStrong}} {{#ultraStrong}}\n**Very strong against:** {{{ultraStrong}}}{{/ultraStrong}} \n\nLevel **{{level}}** ({{atk}}/{{def}}/{{sta}}) CP: **{{cp}}** ",
+      "description": "Pokedex: **{{ id }}**  \n\n**Base Stats:** {{baseAtk}}/{{baseDef}}/{{baseSta}} \n\n**Type:** {{{ type }}} \n{{#superWeak}}**Weak against:** {{{ superWeak }}}{{/superWeak}} {{#ultraWeak}}\n**Very weak against:** {{{ultraWeak}}}{{/ultraWeak}} {{#superStrong}}\n**Strong against:** {{{ superStrong }}}{{/superStrong}} {{#ultraStrong}}\n**Very strong against:** {{{ultraStrong}}}{{/ultraStrong}} \n\n{{{result}}} \nCP range with IV (10/10/10 - 15/15/15)\nLevel **15**: {{lo15}} - {{hi15}}\nLevel **20**: {{lo20}} - {{hi20}}\nLevel **25**: {{lo25}} - {{hi25}}",
       "color": "{{color}}",
       "thumbnail": {
-      "url": "{{{ gifurl }}}"
-      },
-      "image": {
         "url": "{{{ imageurl }}}"
       },
       "author": {
         "name": "{{{name}}}"
       }
+    }
+  },
+  "status": {
+    "embed": {
+      "title": "{{username}} Status",
+      "fields": [
+        {
+          "name": "Version",
+          "value": "{{version}}"
+        },
+        {
+          "name": "Last start",
+          "value": "{{ready}}"
+        },
+        {
+          "name": "Last pings (ms)",
+          "value": "{{pings}}"
+        },
+        {
+          "name": "Database version",
+          "value": "{{dbVersion}}"
+        },
+        {
+          "name": "Active channels",
+          "value": "{{{watching}}}"
+        }
+      ]
     }
   }
 }
