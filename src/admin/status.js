@@ -5,10 +5,8 @@ exports.run = async (client, msg, args) => {
   for (let key in client.watching) {
     const channel = client.channels.find((c) => c.id == key);
 
-    watching = watching + (watching != '' ? ', ' : '') + channel.name;
-    if (client.watching[key].gymId !== null) {
-      watching = watching + ' (' + client.watching[key].gymName + ')';
-    }
+    watching =
+      watching + (watching != '' ? '\\n' : '') + '<#' + channel.id + '>';
   }
   if (watching == '') {
     watching = 'None';
@@ -16,6 +14,7 @@ exports.run = async (client, msg, args) => {
 
   const view = {
     username: client.user.username,
+    version: client.version,
     ready: moment(client.readyAt).fromNow(),
     pings: client.pings,
     dbVersion: client.dbVersion,
