@@ -53,6 +53,7 @@ exports.run = async (client, msg, args) => {
     let sta = 15;
     let level = 40;
     let cp = null;
+    let iv = null;
 
     args.forEach((arg) => {
       if (arg.match(/atk\d{1,2}/gi))
@@ -65,6 +66,8 @@ exports.run = async (client, msg, args) => {
         level = +arg.match(/level\d{1,2}/gi)[0].replace(/level/gi, '');
       else if (arg.match(/cp\d{1,4}/gi))
         cp = +arg.match(/cp\d{1,4}/gi)[0].replace(/cp/gi, '');
+      else if (arg.match(/iv\d{1,4}/gi))
+        iv = +arg.match(/iv\d{1,4}/gi)[0].replace(/iv/gi, '');
     });
 
     client.asyncForEach(monsters, async (mon) => {
@@ -158,6 +161,19 @@ exports.run = async (client, msg, args) => {
             }
             result = result + '** \\n';
           }
+        }
+      } else if (iv) {
+        for (let l = 40; l >= 1; l--) {
+          let cp = client.monsterUtils.calculateCp(mon, l, 15, 15, 15);
+          result =
+            result +
+            'Level **' +
+            l +
+            '**  CP: **' +
+            cp +
+            '**  IV: **' +
+            iv +
+            '%** \\n';
         }
       } else {
         cp = client.monsterUtils.calculateCp(mon, level, atk, def, sta);
