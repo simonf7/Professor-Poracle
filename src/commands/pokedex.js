@@ -162,7 +162,7 @@ exports.run = async (client, msg, args) => {
             result = result + '** \\n';
           }
         }
-      } else if (iv) {
+      } else if (iv == 100) {
         for (let l = 40; l >= 1; l--) {
           let cp = client.monsterUtils.calculateCp(mon, l, 15, 15, 15);
           result =
