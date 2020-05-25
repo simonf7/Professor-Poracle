@@ -5,7 +5,7 @@ exports.run = async (client, msg, args) => {
   }
 
   let text = '';
-  switch (msg.content.substring(1, 4)) {
+  switch (msg.content.substring(1, 4).toLowerCase()) {
     case 'can':
     case 'x':
       text = ' has cancelled';
