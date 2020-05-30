@@ -73,72 +73,108 @@ const findUser = (client, name) => {
   return user;
 };
 
-const processMeowthPinned = async (client, msg) => {
-  msg.embeds.forEach((embed) => {
-    if (client.watching[msg.channel.id].userId === null && embed.footer) {
-      const regEx = /by (.*) • /gm;
-      const search = regEx.exec(embed.footer.text);
+const decodeMeowthText = async (client, text) => {
+  const regEx = /(.*) (is .*|has .*)/g;
+  const search = regEx.exec(text);
 
-      if (search && search[1]) {
-        let reporter = client.discordUtils.findUser(client, search[1]);
-        if (reporter && reporter.id) {
-          console.log(
-            'User recognised: ' + search[1] + ' (' + reporter.id + ')'
-          );
-          client.watching[msg.channel.id].userId = reporter.id;
-          client.watching[msg.channel.id].userName = search[1];
+  if (search && search.length == 3) {
+    const user = await findUser(client, search[1]);
+    return {
+      text: text,
+      userId: user.id,
+      userName: user.username,
+      interested: search[2].indexOf('interested') != -1,
+      coming: search[2].indexOf('on the way') != -1,
+      here: search[2].indexOf('at the raid') != -1,
+      cancelled: search[2].indexOf('cancel') != -1,
+    };
+  }
 
-          client.pool.query(
-            "UPDATE dex_raidcreate SET `user_id` = '" +
-              reporter.id +
-              "' WHERE `channel_id` = '" +
-              msg.channel.id +
-              "'"
-          );
-        }
-      }
-    }
+  return null;
+};
 
-    if (client.watching[msg.channel.id].gymId === null) {
-      embed.fields.forEach(async (field) => {
-        if (field.name == 'Gym') {
-          const gymId = await client.gymUtils.findGym(client, field.value);
-          const gymName = await client.gymUtils.gymName(client, gymId);
+const processMeowthMessage = async (client, msg) => {
+  if (msg.embeds.length > 0) {
+    msg.embeds.forEach((embed) => {
+      if (client.watching[msg.channel.id].userId === null && embed.footer) {
+        const regEx = /by (.*) • /gm;
+        const search = regEx.exec(embed.footer.text);
 
-          if (gymId != -1) {
-            console.log('Gym recognised: ' + gymName + ' (' + gymId + ')');
-            client.watching[msg.channel.id].gymId = gymId;
-            client.watching[msg.channel.id].gymName = gymName;
+        if (search && search[1]) {
+          let reporter = client.discordUtils.findUser(client, search[1]);
+          if (reporter && reporter.id) {
+            console.log(
+              'User recognised: ' + search[1] + ' (' + reporter.id + ')'
+            );
+            client.watching[msg.channel.id].userId = reporter.id;
+            client.watching[msg.channel.id].userName = search[1];
 
             client.pool.query(
-              "UPDATE dex_raidcreate SET `gym_id` = '" +
-                gymId +
+              "UPDATE dex_raidcreate SET `user_id` = '" +
+                reporter.id +
                 "' WHERE `channel_id` = '" +
                 msg.channel.id +
                 "'"
             );
-
-            const results = await client.pool.query(
-              "SELECT user_id FROM dex_users WHERE gym_id='" + gymId + "'"
-            );
-            if (results.length > 0) {
-              let text =
-                'Raid reported at ' + gymName + ' <#' + msg.channel.id + '>';
-              if (client.watching[msg.channel.id].userName) {
-                text = text + ' by ' + client.watching[msg.channel.id].userName;
-              }
-              results.forEach((r) => {
-                client.fetchUser(r.user_id, false).then((user) => {
-                  console.log('Notifying: ' + user.username);
-                  user.send(text);
-                });
-              });
-            }
           }
         }
+      }
+
+      if (client.watching[msg.channel.id].gymId === null) {
+        embed.fields.forEach(async (field) => {
+          if (field.name == 'Gym') {
+            const gymId = await client.gymUtils.findGym(client, field.value);
+            const gymName = await client.gymUtils.gymName(client, gymId);
+
+            if (gymId != -1) {
+              console.log('Gym recognised: ' + gymName + ' (' + gymId + ')');
+              client.watching[msg.channel.id].gymId = gymId;
+              client.watching[msg.channel.id].gymName = gymName;
+
+              client.pool.query(
+                "UPDATE dex_raidcreate SET `gym_id` = '" +
+                  gymId +
+                  "' WHERE `channel_id` = '" +
+                  msg.channel.id +
+                  "'"
+              );
+
+              const results = await client.pool.query(
+                "SELECT user_id FROM dex_users WHERE gym_id='" + gymId + "'"
+              );
+              if (results.length > 0) {
+                let text =
+                  'Raid reported at ' + gymName + ' <#' + msg.channel.id + '>';
+                if (client.watching[msg.channel.id].userName) {
+                  text =
+                    text + ' by ' + client.watching[msg.channel.id].userName;
+                }
+                results.forEach((r) => {
+                  client.fetchUser(r.user_id, false).then((user) => {
+                    console.log('Notifying: ' + user.username);
+                    user.send(text);
+                  });
+                });
+              }
+            }
+          }
+        });
+      }
+    });
+  } else {
+    let details = await decodeMeowthText(client, msg.content);
+
+    if (details) {
+      let text = details.text + ' <#' + msg.channel.id + '>';
+
+      client.watching[msg.channel.id].userIds.forEach((id) => {
+        client.fetchUser(id, false).then((user) => {
+          console.log('Notifying: ' + user.username);
+          user.send(text);
+        });
       });
     }
-  });
+  }
 };
 
 module.exports = {
@@ -148,5 +184,5 @@ module.exports = {
   msgOk,
   showTable,
   findUser,
-  processMeowthPinned,
+  processMeowthMessage,
 };
