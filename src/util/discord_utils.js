@@ -75,7 +75,7 @@ const findUser = (client, name) => {
 
 const processMeowthPinned = async (client, msg) => {
   msg.embeds.forEach((embed) => {
-    if (client.watching[msg.channel.id].userId === null) {
+    if (client.watching[msg.channel.id].userId === null && embed.footer) {
       const regEx = /by (.*) • /gm;
       const search = regEx.exec(embed.footer.text);
 
