@@ -121,12 +121,15 @@ const processMeowthPinned = async (client, msg) => {
               "SELECT user_id FROM dex_users WHERE gym_id='" + gymId + "'"
             );
             if (results.length > 0) {
+              let text =
+                'Raid reported at ' + gymName + ' <#' + msg.channel.id + '>';
+              if (client.watching[msg.channel.id].userName) {
+                text = text + ' by ' + client.watching[msg.channel.id].userName;
+              }
               results.forEach((r) => {
                 client.fetchUser(r.user_id, false).then((user) => {
                   console.log('Notifying: ' + user.username);
-                  user.send(
-                    'Raid reported at ' + gymName + ' <#' + msg.channel.id + '>'
-                  );
+                  user.send(text);
                 });
               });
             }
