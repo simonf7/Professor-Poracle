@@ -19,6 +19,7 @@ const monsters = require('./util/monsters');
 const descriptions = require('./util/description');
 const dts = require('./util/message');
 const client = new Client();
+const discordUtils = require('./util/discord_utils');
 const monsterUtils = require('./util/monster_utils');
 const gymUtils = require('./util/gym_utils');
 const migrations = require('./util/migrations');
@@ -59,6 +60,7 @@ async function main() {
   client.monsters = monsters;
   client.descriptions = descriptions;
   client.pokeTypes = pokeTypes;
+  client.discordUtils = discordUtils;
   client.monsterUtils = monsterUtils;
   client.gymUtils = gymUtils;
   client.asyncForEach = asyncForEach;
