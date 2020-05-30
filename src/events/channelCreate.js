@@ -4,7 +4,14 @@ module.exports = (client, channel) => {
     client.watching[channel.id] = {
       gymId: null,
       gymName: null,
+      userId: null,
+      userName: null,
       userIds: [],
     };
+    client.pool.query(
+      "INSERT IGNORE INTO dex_raidcreate (`channel_id`) VALUES ('" +
+        channel.id +
+        "')"
+    );
   }
 };

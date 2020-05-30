@@ -5,38 +5,7 @@ module.exports = async (client, msg) => {
       client.config.discord.meowth.indexOf(msg.author.id) >= 0 &&
       client.config.discord.categories.indexOf(msg.channel.parentID) >= 0
     ) {
-      msg.embeds.forEach((embed) => {
-        embed.fields.forEach(async (field) => {
-          if (field.name == 'Gym') {
-            const gymId = await client.gymUtils.findGym(client, field.value);
-            const gymName = await client.gymUtils.gymName(client, gymId);
-
-            if (gymId != -1 && client.watching[msg.channel.id].gymId === null) {
-              console.log('Gym recognised: ' + gymName + ' (' + gymId + ')');
-              client.watching[msg.channel.id].gymId = gymId;
-              client.watching[msg.channel.id].gymName = gymName;
-
-              const results = await client.pool.query(
-                "SELECT user_id FROM dex_users WHERE gym_id='" + gymId + "'"
-              );
-              if (results.length > 0) {
-                results.forEach((r) => {
-                  client.fetchUser(r.user_id, false).then((user) => {
-                    console.log('Notifying: ' + user.username);
-                    user.send(
-                      'Raid reported at ' +
-                        gymName +
-                        ' <#' +
-                        msg.channel.id +
-                        '>'
-                    );
-                  });
-                });
-              }
-            }
-          }
-        });
-      });
+      client.discordUtils.processMeowthPinned(client, msg);
     }
     return;
   }
