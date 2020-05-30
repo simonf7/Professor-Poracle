@@ -78,6 +78,7 @@ const processMeowthPinned = async (client, msg) => {
     if (client.watching[msg.channel.id].userId === null) {
       const regEx = /by (.*) • Ends/gm;
       const search = regEx.exec(embed.footer.text);
+      console.log(search);
       if (search && search[1]) {
         let reporter = client.discordUtils.findUser(client, search[1]);
         if (reporter && reporter.id) {
