@@ -4,7 +4,6 @@ exports.migrate = async (pool) => {
   const id = await pool.query(
     "SELECT id FROM dex_areas WHERE `name` = 'Norwich'"
   );
-  console.log(id[0].id);
 
   await pool.query(
     "INSERT INTO dex_nests (`name`, `area_id`) VALUES ('Barkers Lane Open Space'," +
