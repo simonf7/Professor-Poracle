@@ -1,33 +1,35 @@
 exports.migrate = async (pool) => {
-  await pool.query("INSERT INTO dex_areas (`name`) VALUES ('Norwich')");
+  const nests = [
+    {
+      area: 'Norwich',
+      names: [
+        'Barkers Lane Open Space',
+        'Wilks Farm Play Area',
+        'Sprowston Recreational Ground',
+        'Sparhawk Park',
+      ],
+    },
+  ];
 
-  const id = await pool.query(
-    "SELECT id FROM dex_areas WHERE `name` = 'Norwich'"
-  );
+  nests.forEach(async (nest) => {
+    await pool.query(
+      "INSERT INTO dex_areas (`name`) VALUES ('" + nest.area + "')"
+    );
 
-  await pool.query(
-    "INSERT INTO dex_nests (`name`, `area_id`) VALUES ('Barkers Lane Open Space'," +
-      id[0].id +
-      ')'
-  );
+    const id = await pool.query(
+      "SELECT id FROM dex_areas WHERE `name` = '" + nest.area + "'"
+    );
 
-  await pool.query(
-    "INSERT INTO dex_nests (`name`, `area_id`) VALUES ('Wilks Farm Play Area'," +
-      id[0].id +
-      ')'
-  );
-
-  await pool.query(
-    "INSERT INTO dex_nests (`name`, `area_id`) VALUES ('Sprowston Recreational Ground'," +
-      id[0].id +
-      ')'
-  );
-
-  await pool.query(
-    "INSERT INTO dex_nests (`name`, `area_id`) VALUES ('Sparhawk Park'," +
-      id[0].id +
-      ')'
-  );
+    nest.names.forEach(async (name) => {
+      await pool.query(
+        "INSERT INTO dex_nests (`name`, `area_id`) VALUES ('" +
+          name +
+          "'," +
+          id[0].id +
+          ')'
+      );
+    });
+  });
 
   return true;
 };
