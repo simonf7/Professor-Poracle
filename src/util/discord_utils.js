@@ -96,6 +96,7 @@ const decodeMeowthText = async (client, text) => {
 const processMeowthMessage = async (client, msg) => {
   if (msg.embeds.length > 0) {
     msg.embeds.forEach((embed) => {
+      // log who created the channel
       if (
         client.watching[msg.channel.id] &&
         client.watching[msg.channel.id].userId === null &&
@@ -124,6 +125,7 @@ const processMeowthMessage = async (client, msg) => {
         }
       }
 
+      // if the gym is recognised, notify everyones who's watching
       if (client.watching[msg.channel.id].gymId === null) {
         embed.fields.forEach(async (field) => {
           if (field.name == 'Gym') {
@@ -169,6 +171,26 @@ const processMeowthMessage = async (client, msg) => {
     let details = await decodeMeowthText(client, msg.content);
 
     if (details) {
+      // track users expressing interest
+      if (details.cancelled) {
+        await client.pool.query(
+          "DELETE FROM dex_interest WHERE channel_id = '" +
+            msg.channel.id +
+            "' AND user_id = '" +
+            details.userId +
+            "'"
+        );
+      } else {
+        await client.pool.query(
+          "INSERT IGNORE INTO dex_interest (`channel_id`,`user_id`) VALUES ('" +
+            msg.channel.id +
+            "','" +
+            details.userId +
+            "')"
+        );
+      }
+
+      // notify everyone who wants notifying
       let text = details.text + ' <#' + msg.channel.id + '>';
 
       client.watching[msg.channel.id].userIds.forEach((id) => {
