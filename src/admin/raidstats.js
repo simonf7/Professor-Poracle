@@ -15,7 +15,7 @@ exports.run = async (client, msg, args) => {
 
   client.pool.query(sql).then((rows) => {
     let table = [];
-    table.push(['User', 'Raids']);
+    table.push(['Trainer', 'Raids Created']);
     rows.forEach(async (r) => {
       const user =
         client.users.get(r.user_id) || (await client.fetchUser(r.user_id));
