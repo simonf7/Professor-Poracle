@@ -1,5 +1,7 @@
 exports.run = async (client, msg, args) => {
-  msg.reply(
-    client.discordUtils.msgEmbed(await client.nestUtils.getNestText(client))
-  );
+  const nests = await client.nestUtils.getNestText(client);
+
+  await client.asyncForEach(nests, async (n, i) => {
+    await msg.channel.send(n.text);
+  });
 };

@@ -5,6 +5,7 @@ module.exports = async (client) => {
       name: 'with Meowth',
     },
   });
+
   const channels = await client.channels.filter(
     (channel) => client.config.discord.categories.indexOf(channel.parentID) >= 0
   );
