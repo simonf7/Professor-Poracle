@@ -96,7 +96,11 @@ const decodeMeowthText = async (client, text) => {
 const processMeowthMessage = async (client, msg) => {
   if (msg.embeds.length > 0) {
     msg.embeds.forEach((embed) => {
-      if (client.watching[msg.channel.id].userId === null && embed.footer) {
+      if (
+        client.watching[msg.channel.id] &&
+        client.watching[msg.channel.id].userId === null &&
+        embed.footer
+      ) {
         const regEx = /by (.*) • /gm;
         const search = regEx.exec(embed.footer.text);
 
@@ -177,6 +181,51 @@ const processMeowthMessage = async (client, msg) => {
   }
 };
 
+const userSelect = async (client, msg, rows, id, name, prompt = '') => {
+  let selectId = -1;
+
+  if (rows.length == 1) {
+    selectId = rows[0][id];
+  } else if (rows.length > 1 && rows.length < client.emoji.length) {
+    let text = '';
+    if (prompt != '') {
+      text = text + prompt + '\n\n';
+    }
+    rows.forEach((r, i) => {
+      text = text + client.emoji[i] + ': ' + r[name] + '\n';
+    });
+    text = text + client.emojiQ + ': Unknown';
+
+    const message = await msg.reply({ embed: { description: text } });
+    await client.asyncForEach(rows, async (r, i) => {
+      await message.react(client.emoji[i]);
+    });
+    await message.react(client.emojiQ);
+
+    await message
+      .awaitReactions(
+        (reaction, user) =>
+          user.id == msg.author.id &&
+          ((client.emoji.indexOf(reaction.emoji.name) >= 0 &&
+            client.emoji.indexOf(reaction.emoji.name) < rows.length) ||
+            reaction.emoji.name == client.emojiQ),
+        { max: 1, time: 30000 }
+      )
+      .then((collected) => {
+        if (client.emoji.indexOf(collected.first().emoji.name) >= 0) {
+          selectId =
+            rows[client.emoji.indexOf(collected.first().emoji.name)][id];
+        }
+        message.delete();
+      })
+      .catch(() => {
+        message.delete();
+      });
+  }
+
+  return selectId;
+};
+
 module.exports = {
   msgAdmin,
   msgEmbed,
@@ -185,4 +234,5 @@ module.exports = {
   showTable,
   findUser,
   processMeowthMessage,
+  userSelect,
 };
