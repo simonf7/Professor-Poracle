@@ -66,10 +66,10 @@ const getNestText = async function (client, ids = null) {
   let sql = '';
   if (client.config.discord.nests.scanned == true) {
     sql =
-      "SELECT dex_nests.id, dex_nests.name, if(dex_nests.pokemon_id = 0, 'no', 'yes') as reported, if(dex_nests.pokemon_id = 0, if(nests.pokemon_id = 443, 0, nests.pokemon_id), dex_nests.pokemon_id) AS pokemon_id, dex_nests.message_id, dex_areas.id AS area_id, dex_areas.name AS area_name FROM dex_nests LEFT JOIN dex_areas ON dex_areas.id = dex_nests.area_id LEFT JOIN nests ON nests.name = dex_nests.name";
+      "SELECT dex_nests.id, dex_nests.name, if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, if(dex_nests.pokemon_id = 0, 'no', 'yes') as reported, if(dex_nests.pokemon_id = 0, if(nests.pokemon_id = 443, 0, nests.pokemon_id), dex_nests.pokemon_id) AS pokemon_id, dex_nests.message_id, dex_areas.id AS area_id, dex_areas.name AS area_name FROM dex_nests LEFT JOIN dex_areas ON dex_areas.id = dex_nests.area_id LEFT JOIN nests ON nests.name = dex_nests.name";
   } else {
     sql =
-      "SELECT dex_nests.id, dex_nests.name, 'yes' as reported, dex_nests.pokemon_id AS pokemon_id, dex_nests.message_id, dex_areas.id AS area_id, dex_areas.name AS area_name FROM dex_nests LEFT JOIN dex_areas ON dex_areas.id = dex_nests.area_id LEFT JOIN nests ON nests.name = dex_nests.name";
+      "SELECT dex_nests.id, dex_nests.name, if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, 'yes' as reported, dex_nests.pokemon_id AS pokemon_id, dex_nests.message_id, dex_areas.id AS area_id, dex_areas.name AS area_name FROM dex_nests LEFT JOIN dex_areas ON dex_areas.id = dex_nests.area_id LEFT JOIN nests ON nests.name = dex_nests.name";
   }
   sql += ' ORDER BY dex_areas.sort, dex_areas.name, dex_nests.name';
 
@@ -82,10 +82,6 @@ const getNestText = async function (client, ids = null) {
     let messageIds = [];
 
     if (ids === null) {
-      console.log(
-        (await getNextMigration(client)).format('dddd, Do MMMM YYYY')
-      );
-
       results.push({
         text:
           'Next migration: ' +
@@ -115,6 +111,7 @@ const getNestText = async function (client, ids = null) {
         text += '__**' + r.area_name + '**__\n';
       }
       text += r.name + ': ';
+
       nests.push({ id: r.id, message_id: r.message_id });
 
       if (messageIds.indexOf(r.message_id) == -1) {
@@ -159,7 +156,6 @@ const getNestText = async function (client, ids = null) {
       }
 
       let last = await getLastUpdate(client);
-      console.log(last);
       results.push({
         text:
           ' \nList updated: **' +
