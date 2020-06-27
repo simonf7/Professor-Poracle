@@ -1,8 +1,6 @@
 exports.run = async (client, msg, args) => {
   const nestChannel = client.channels.get(client.config.discord.nests.channel);
 
-  //  const messages = await client.nestUtils.fetchMesages();
-  //  if (messages.count == 0) {
   client.nestUtils.getNestText(client).then(async (nests) => {
     // do we have message ids?
     let update = args.length > 0 && args[0] == 'force' ? false : true;
@@ -11,7 +9,6 @@ exports.run = async (client, msg, args) => {
         update = false;
       }
     });
-    console.log('Update: ' + update);
 
     if (update) {
       await client.asyncForEach(nests, async (n) => {
@@ -49,33 +46,7 @@ exports.run = async (client, msg, args) => {
         }
       });
     }
-  });
-  //  } else {
-  //  }
 
-  /*
-  console.log(mine.size);
-  if (mine.size == 0) {
-    client.nestUtils.getNestText(client).then((text) => {
-      nest.send(text).then(() => {
-        msg.reply(client.discordUtils.msgOk('Nests updated'));
-      });
-    });
-  } else {
-    let curMsg = mine.entries().next().value;
-    client.nestUtils.getNestText(client).then((text) => {
-      console.log(curMsg[1]);
-      curMsg[1].edit(text);
-    });
-  }
-  */
-  /*
-  nest.bulkDelete(mine).then(() => {
-    client.nestUtils.getNestText(client).then((text) => {
-      nest.send(text).then(() => {
-        msg.reply(client.discordUtils.msgOk('Nests updated'));
-      });
-    });
+    msg.reply(client.discordUtils.msgOk('Nests updated'));
   });
-  */
 };
