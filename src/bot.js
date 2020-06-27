@@ -16,10 +16,13 @@ const { promisify } = require('util');
 const readFileAsync = promisify(fs.readFile);
 
 const monsters = require('./util/monsters');
+const poke_names = require('./util/poke_names');
 const descriptions = require('./util/description');
 const dts = require('./util/message');
 const client = new Client();
+const utils = require('./util/utils');
 const discordUtils = require('./util/discord_utils');
+const nestUtils = require('./util/nest_utils');
 const monsterUtils = require('./util/monster_utils');
 const gymUtils = require('./util/gym_utils');
 const migrations = require('./util/migrations');
@@ -53,14 +56,17 @@ async function main() {
     await askToken(config);
   }
 
-  client.version = '0.7.2 (30th May 2020)';
+  client.version = '0.8.2 (30th May 2020)';
   client.config = config;
   client.dts = dts;
   client.mustache = mustache;
   client.monsters = monsters;
+  client.poke_names = poke_names;
   client.descriptions = descriptions;
   client.pokeTypes = pokeTypes;
+  client.utils = utils;
   client.discordUtils = discordUtils;
+  client.nestUtils = nestUtils;
   client.monsterUtils = monsterUtils;
   client.gymUtils = gymUtils;
   client.asyncForEach = asyncForEach;
