@@ -248,6 +248,16 @@ const userSelect = async (client, msg, rows, id, name, prompt = '') => {
   return selectId;
 };
 
+const argOption = (args, option) => {
+  if (args.indexOf(option) >= 0 || args.indexOf('+' + option) >= 0) {
+    return true;
+  }
+  if (args.indexOf('!' + option) >= 0 || args.indexOf('-' + option) >= 0) {
+    return false;
+  }
+  return null;
+};
+
 module.exports = {
   msgAdmin,
   msgEmbed,
@@ -257,4 +267,5 @@ module.exports = {
   findUser,
   processMeowthMessage,
   userSelect,
+  argOption,
 };
