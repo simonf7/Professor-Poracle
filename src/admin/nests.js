@@ -19,8 +19,6 @@ exports.run = async (client, msg, args) => {
     compare: client.discordUtils.argOption(args, 'compare'),
   };
 
-  console.log(options);
-
   const nests = await client.nestUtils.getNestText(client, options);
 
   await client.asyncForEach(nests, async (n, i) => {

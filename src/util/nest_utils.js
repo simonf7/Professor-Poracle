@@ -136,13 +136,14 @@ const getNestText = async function (client, options = {}) {
             text += ' *(unconfirmed)*';
           }
         }
-      }
-      if (compare && r.scanned_id > 0) {
-        if (
-          client.poke_names[r.scanned_id] &&
-          (r.pokemon_id == 0 || r.reported == 'yes')
-        ) {
-          text += ' *(scanned: ' + client.poke_names[r.scanned_id]['en'] + ')*';
+        if (compare && r.scanned_id > 0) {
+          if (
+            client.poke_names[r.scanned_id] &&
+            (r.pokemon_id == 0 || r.reported == 'yes')
+          ) {
+            text +=
+              ' *(scanned: ' + client.poke_names[r.scanned_id]['en'] + ')*';
+          }
         }
       }
 
