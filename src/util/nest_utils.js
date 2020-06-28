@@ -62,29 +62,18 @@ const selectArea = async (client, msg, prompt = '') => {
   return areaId;
 };
 
-const getNestText = async function (client, ids = null) {
-  // get config
-  let scanned = await client.utils.getSetting(
-    client,
-    'nests_scanned',
-    client.config.discord.nests.scanned
-  );
-  scanned = scanned == true || scanned == 'true';
-
-  let links = await client.utils.getSetting(
-    client,
-    'nests_links',
-    client.config.discord.nests.links
-  );
-  links = links == true || links == 'true';
+const getNestText = async function (client, options = {}) {
+  const scanned = options.scanned == true || options.scanned == 'true';
+  const compare = options.compare == true || options.compare == 'true';
+  const links = options.links == true || options.links == 'true';
 
   let sql = '';
   if (scanned) {
     sql =
-      "SELECT dex_nests.id, dex_nests.name, if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, if(dex_nests.pokemon_id = 0, 'no', 'yes') as reported, if(dex_nests.pokemon_id = 0, if(nests.pokemon_id = 443, 0, nests.pokemon_id), dex_nests.pokemon_id) AS pokemon_id, dex_nests.message_id, dex_areas.id AS area_id, dex_areas.name AS area_name FROM dex_nests LEFT JOIN dex_areas ON dex_areas.id = dex_nests.area_id LEFT JOIN nests ON nests.name = dex_nests.name";
+      "SELECT dex_nests.id, dex_nests.name, if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, if(dex_nests.pokemon_id = 0, 'no', 'yes') as reported, if(dex_nests.pokemon_id = 0, if(nests.pokemon_id = 443, 0, nests.pokemon_id), dex_nests.pokemon_id) AS pokemon_id, nests.pokemon_id AS scanned_id, dex_nests.message_id, dex_areas.id AS area_id, dex_areas.name AS area_name FROM dex_nests LEFT JOIN dex_areas ON dex_areas.id = dex_nests.area_id LEFT JOIN nests ON nests.name = dex_nests.name";
   } else {
     sql =
-      "SELECT dex_nests.id, dex_nests.name, if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, 'yes' as reported, dex_nests.pokemon_id AS pokemon_id, dex_nests.message_id, dex_areas.id AS area_id, dex_areas.name AS area_name FROM dex_nests LEFT JOIN dex_areas ON dex_areas.id = dex_nests.area_id LEFT JOIN nests ON nests.name = dex_nests.name";
+      "SELECT dex_nests.id, dex_nests.name, if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, 'yes' as reported, dex_nests.pokemon_id AS pokemon_id, nests.pokemon_id AS scanned_id, dex_nests.message_id, dex_areas.id AS area_id, dex_areas.name AS area_name FROM dex_nests LEFT JOIN dex_areas ON dex_areas.id = dex_nests.area_id LEFT JOIN nests ON nests.name = dex_nests.name";
   }
   sql += ' ORDER BY dex_areas.sort, dex_areas.name, dex_nests.name';
 
@@ -96,7 +85,7 @@ const getNestText = async function (client, ids = null) {
     let count = 0;
     let messageIds = [];
 
-    if (ids === null) {
+    if (!Array.isArray(options.ids)) {
       results.push({
         text:
           'Next migration: ' +
@@ -109,7 +98,7 @@ const getNestText = async function (client, ids = null) {
 
     rows.forEach((r) => {
       count += 1;
-      if (count == 20 && ids == null) {
+      if (count == 20 && !Array.isArray(options.ids)) {
         results.push({
           text: text,
           messageId: messageIds.length == 1 ? messageIds[0] : null,
@@ -143,9 +132,17 @@ const getNestText = async function (client, ids = null) {
           if (shiny) {
             text += ' :sparkles:';
           }
-          if (r.reported == 'no') {
+          if (scanned && r.reported == 'no') {
             text += ' *(unconfirmed)*';
           }
+        }
+      }
+      if (compare && r.scanned_id > 0) {
+        if (
+          client.poke_names[r.scanned_id] &&
+          (r.pokemon_id == 0 || r.reported == 'yes')
+        ) {
+          text += ' *(scanned: ' + client.poke_names[r.scanned_id]['en'] + ')*';
         }
       }
 
@@ -160,7 +157,7 @@ const getNestText = async function (client, ids = null) {
       });
     }
 
-    if (ids === null) {
+    if (!Array.isArray(options.ids)) {
       let notes = await client.utils.getSetting(client, 'nest_notes');
       if (notes) {
         results.push({
