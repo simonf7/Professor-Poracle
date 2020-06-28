@@ -1,4 +1,4 @@
-const getSetting = async (client, key) => {
+const getSetting = async (client, key, ret = null) => {
   const result = await client.pool.query(
     "SELECT value FROM dex_settings WHERE `key` = '" + key + "'"
   );
@@ -6,7 +6,7 @@ const getSetting = async (client, key) => {
     return result[0].value;
   }
 
-  return null;
+  return ret;
 };
 
 const setSetting = async (client, key, value) => {
