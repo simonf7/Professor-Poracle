@@ -63,8 +63,23 @@ const selectArea = async (client, msg, prompt = '') => {
 };
 
 const getNestText = async function (client, ids = null) {
+  // get config
+  let scanned = await client.utils.getSetting(
+    client,
+    'nests_scanned',
+    client.config.discord.nests.scanned
+  );
+  scanned = scanned == true || scanned == 'true';
+
+  let links = await client.utils.getSetting(
+    client,
+    'nests_links',
+    client.config.discord.nests.links
+  );
+  links = links == true || links == 'true';
+
   let sql = '';
-  if (client.config.discord.nests.scanned == true) {
+  if (scanned) {
     sql =
       "SELECT dex_nests.id, dex_nests.name, if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, if(dex_nests.pokemon_id = 0, 'no', 'yes') as reported, if(dex_nests.pokemon_id = 0, if(nests.pokemon_id = 443, 0, nests.pokemon_id), dex_nests.pokemon_id) AS pokemon_id, dex_nests.message_id, dex_areas.id AS area_id, dex_areas.name AS area_name FROM dex_nests LEFT JOIN dex_areas ON dex_areas.id = dex_nests.area_id LEFT JOIN nests ON nests.name = dex_nests.name";
   } else {
@@ -129,7 +144,7 @@ const getNestText = async function (client, ids = null) {
             text += ' :sparkles:';
           }
           if (r.reported == 'no') {
-            text += ' *(scanned)*';
+            text += ' *';
           }
         }
       }

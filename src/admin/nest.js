@@ -3,7 +3,7 @@ exports.run = async (client, msg, args) => {
     // first argument should be a pokemon
     let pokemon = args.shift();
     let monId = -1;
-    if (pokemon === 'clear') {
+    if (pokemon === 'clear' || pokemon === 'nothing') {
       monId = 0;
     } else {
       monId = client.monsterUtils.getIdFromMon(client, pokemon, 0);
@@ -30,18 +30,25 @@ exports.run = async (client, msg, args) => {
                       "',NOW())"
                   )
                   .then((res) => {
-                    msg.reply(
-                      client.discordUtils.msgOk(
-                        '**' +
-                          nestName +
-                          '** set to **' +
-                          (monId == 0
-                            ? 'nothing'
-                            : client.monsterUtils.getMonById(client, monId)
-                                .name) +
-                          '**'
+                    msg
+                      .reply(
+                        client.discordUtils.msgOk(
+                          '**' +
+                            nestName +
+                            '** set to **' +
+                            (monId == 0
+                              ? 'nothing'
+                              : client.monsterUtils.getMonById(client, monId)
+                                  .name) +
+                            '**'
+                        )
                       )
-                    );
+                      .then((message) => {
+                        // auto delete the confirmation after 10 seconds
+                        setTimeout(() => {
+                          message.delete();
+                        }, 10000);
+                      });
                   });
               });
           });
