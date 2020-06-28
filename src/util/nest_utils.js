@@ -144,7 +144,7 @@ const getNestText = async function (client, ids = null) {
             text += ' :sparkles:';
           }
           if (r.reported == 'no') {
-            text += ' *';
+            text += ' *(unconfirmed)*';
           }
         }
       }
