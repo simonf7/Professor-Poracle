@@ -1,19 +1,21 @@
 exports.run = async (client, msg, args) => {
   const options = {
-    scanned: client.discordUtils.argOption(args, 'scanned')
-      ? client.discordUtils.argOption(args, 'scanned')
-      : await client.utils.getSetting(
-          client,
-          'nests_scanned',
-          client.config.discord.nests.scanned
-        ),
-    links: client.discordUtils.argOption(args, 'links')
-      ? client.discordUtils.argOption(args, 'links')
-      : await client.utils.getSetting(
-          client,
-          'nests_links',
-          client.config.discord.nests.links
-        ),
+    scanned:
+      client.discordUtils.argOption(args, 'scanned') !== null
+        ? client.discordUtils.argOption(args, 'scanned')
+        : await client.utils.getSetting(
+            client,
+            'nests_scanned',
+            client.config.discord.nests.scanned
+          ),
+    links:
+      client.discordUtils.argOption(args, 'links') !== null
+        ? client.discordUtils.argOption(args, 'links')
+        : await client.utils.getSetting(
+            client,
+            'nests_links',
+            client.config.discord.nests.links
+          ),
     compare: client.discordUtils.argOption(args, 'compare'),
   };
 
