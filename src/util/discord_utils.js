@@ -23,7 +23,9 @@ const msgOk = (msg) => {
   };
 };
 
-const showTable = (table, align = []) => {
+const makeTable = (table, align = []) => {
+  let data = [];
+
   let width = [];
   table.forEach((row) => {
     row.forEach((e, i) => {
@@ -32,27 +34,34 @@ const showTable = (table, align = []) => {
       }
     });
   });
+
   let text = '';
   table.forEach((row, i) => {
-    text = text + (i == 0 ? '```' : '\n');
+    if (text.length > 1600) {
+      text += '```';
+      data.push(text);
+      text = '';
+    }
+    text += text == '' ? '```' : '\n';
     row.forEach((e, i) => {
       if (align[i] && align[i] == 'r') {
-        text = text + e.padStart(width[i], ' ') + '  ';
+        text += e.padStart(width[i], ' ') + '  ';
       } else {
-        text = text + e.padEnd(width[i] + 2, ' ');
+        text += e.padEnd(width[i] + 2, ' ');
       }
     });
     if (i == 0) {
-      text = text + '\n';
+      text += '\n';
       width.forEach((w) => {
-        text = text + ''.padEnd(w, '=') + '  ';
+        text += ''.padEnd(w, '=') + '  ';
       });
     }
   });
 
-  text = text + '```';
+  text += '```';
+  data.push(text);
 
-  return text;
+  return data;
 };
 
 const findUser = (client, name) => {
@@ -263,7 +272,7 @@ module.exports = {
   msgEmbed,
   msgError,
   msgOk,
-  showTable,
+  makeTable,
   findUser,
   processMeowthMessage,
   userSelect,
