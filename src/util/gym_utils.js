@@ -113,15 +113,17 @@ const findGym = async (client, gym) => {
   return -1;
 };
 
-const getUserStats = async (client, source, limit, days) => {
+const _countQuery = async (client, source, idField, dateField, limit, days) => {
   const early = moment().format('H') < 9;
 
-  let sql = 'SELECT user_id, COUNT(*) AS total FROM ';
+  let sql = 'SELECT ' + idField + ' AS id, COUNT(*) AS total FROM ';
   if (days <= 7) {
     sql +=
       '(SELECT * FROM ' +
       source +
-      " WHERE created > '" +
+      ' WHERE ' +
+      dateField +
+      " > '" +
       moment()
         .subtract(early ? days + 1 : days, 'days')
         .format('Y-MM-DD') +
@@ -129,93 +131,186 @@ const getUserStats = async (client, source, limit, days) => {
   } else {
     sql += source;
   }
-  sql += ' GROUP BY user_id HAVING user_id IS NOT NULL ORDER BY total DESC';
+  sql +=
+    ' GROUP BY ' +
+    idField +
+    ' HAVING ' +
+    idField +
+    ' IS NOT NULL ORDER BY total DESC';
   if (limit) {
     sql += ' LIMIT ' + limit;
   }
 
   return client.pool.query(sql).then(async (rows) => {
-    let userStats = null;
+    let stats = null;
 
     if (days <= 7) {
       // get list of users
       let users = [];
       rows.forEach((r) => {
-        users.push("'" + r.user_id + "'");
+        users.push("'" + r.id + "'");
       });
 
       let sql =
-        'SELECT user_id, DATE(created) AS created, COUNT(*) AS total FROM ';
+        'SELECT ' +
+        idField +
+        ' AS id, DATE(' +
+        dateField +
+        ') AS ' +
+        dateField +
+        ', COUNT(*) AS total FROM ';
       sql +=
         '(SELECT * FROM ' +
         source +
-        " WHERE created > '" +
+        ' WHERE ' +
+        dateField +
+        " > '" +
         moment()
           .subtract(early ? days + 1 : days, 'days')
           .format('Y-MM-DD') +
         " 23:59:59') rc";
       sql +=
-        ' GROUP BY user_id, DATE(created) HAVING user_id IN (' +
+        ' GROUP BY ' +
+        idField +
+        ', DATE(' +
+        dateField +
+        ') HAVING ' +
+        idField +
+        ' IN (' +
         users.join(',') +
         ')';
 
-      userStats = await client.pool.query(sql);
+      stats = await client.pool.query(sql);
     }
 
-    let headings = ['Trainer'];
+    return { rows: rows, stats: stats };
+  });
+};
+
+const getGymStats = async (client, source, limit, days) => {
+  const early = moment().format('H') < 9;
+
+  const stats = await _countQuery(
+    client,
+    source,
+    'gym_id',
+    'created',
+    limit,
+    days
+  );
+
+  let headings = ['Gym'];
+  if (days <= 7) {
+    let now = moment();
+    if (early) {
+      now.subtract(1, 'days');
+    }
+    for (let i = 0; i < days; i++) {
+      headings.push(now.format('ddd'));
+      now.subtract(1, 'days');
+    }
+  }
+  headings.push('Total');
+  let table = [];
+  table.push(headings);
+
+  await client.asyncForEach(stats.rows, async (r) => {
+    const gym = await gymName(client, r.id);
+
+    let data = [gym];
+
     if (days <= 7) {
       let now = moment();
       if (early) {
         now.subtract(1, 'days');
       }
       for (let i = 0; i < days; i++) {
-        headings.push(now.format('ddd'));
+        let found = stats.stats.find((v) => {
+          return (
+            r.id == v.id && now.format('D') == moment(v.created).format('D')
+          );
+        });
+        if (typeof found == 'undefined') {
+          data.push('0');
+        } else {
+          data.push(found.total.toString());
+        }
+
         now.subtract(1, 'days');
       }
     }
-    headings.push('Total');
-    let table = [];
-    table.push(headings);
 
-    await client.asyncForEach(rows, async (r) => {
-      const user =
-        client.users.get(r.user_id) || (await client.fetchUser(r.user_id));
-
-      let data = [user.username];
-
-      if (days <= 7) {
-        let now = moment();
-        if (early) {
-          now.subtract(1, 'days');
-        }
-        for (let i = 0; i < days; i++) {
-          let found = userStats.find((v) => {
-            return (
-              r.user_id == v.user_id &&
-              now.format('D') == moment(v.created).format('D')
-            );
-          });
-          if (typeof found == 'undefined') {
-            data.push('0');
-          } else {
-            data.push(found.total.toString());
-          }
-
-          now.subtract(1, 'days');
-        }
-      }
-
-      data.push(r.total.toString());
-      table.push(data);
-    });
-
-    return table;
+    data.push(r.total.toString());
+    table.push(data);
   });
+
+  return table;
+};
+
+const getUserStats = async (client, source, limit, days) => {
+  const early = moment().format('H') < 9;
+
+  const stats = await _countQuery(
+    client,
+    source,
+    'user_id',
+    'created',
+    limit,
+    days
+  );
+
+  let headings = ['Trainer'];
+  if (days <= 7) {
+    let now = moment();
+    if (early) {
+      now.subtract(1, 'days');
+    }
+    for (let i = 0; i < days; i++) {
+      headings.push(now.format('ddd'));
+      now.subtract(1, 'days');
+    }
+  }
+  headings.push('Total');
+  let table = [];
+  table.push(headings);
+
+  await client.asyncForEach(stats.rows, async (r) => {
+    const user = client.users.get(r.id) || (await client.fetchUser(r.id));
+
+    let data = [user.username];
+
+    if (days <= 7) {
+      let now = moment();
+      if (early) {
+        now.subtract(1, 'days');
+      }
+      for (let i = 0; i < days; i++) {
+        let found = stats.stats.find((v) => {
+          return (
+            r.id == v.id && now.format('D') == moment(v.created).format('D')
+          );
+        });
+        if (typeof found == 'undefined') {
+          data.push('0');
+        } else {
+          data.push(found.total.toString());
+        }
+
+        now.subtract(1, 'days');
+      }
+    }
+
+    data.push(r.total.toString());
+    table.push(data);
+  });
+
+  return table;
 };
 
 module.exports = {
   gymName,
   selectGym,
   findGym,
+  getGymStats,
   getUserStats,
 };
