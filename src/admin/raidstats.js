@@ -36,6 +36,7 @@ exports.run = async (client, msg, args) => {
     'r',
   ]);
 
+  await msg.channel.send('Raid channels created by trainers');
   await client.asyncForEach(message, async (m) => {
     await msg.channel.send(m);
   });
