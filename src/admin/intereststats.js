@@ -19,7 +19,7 @@ exports.run = async (client, msg, args) => {
 
   const table = await client.gymUtils.getUserStats(
     client,
-    'dex_raidcreate',
+    'dex_interest',
     limit,
     days
   );
