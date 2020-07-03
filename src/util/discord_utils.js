@@ -88,6 +88,12 @@ const decodeMeowthText = async (client, text) => {
 
   if (search && search.length == 3) {
     const user = await findUser(client, search[1]);
+
+    if (user === null) {
+      console.log("Can't find user: " + search[1] + ' (' + text + ')');
+      return null;
+    }
+
     return {
       text: text,
       userId: user.id,
