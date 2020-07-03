@@ -1,15 +1,28 @@
 exports.run = async (client, msg, args) => {
   const nestChannel = client.channels.get(client.config.discord.nests.channel);
-  let links = await client.utils.getSetting(
-    client,
-    'nests_links',
-    client.config.discord.nests.links
-  );
-  links = links == true || links == 'true';
+  const options = {
+    scanned:
+      client.discordUtils.argOption(args, 'scanned') !== null
+        ? client.discordUtils.argOption(args, 'scanned')
+        : await client.utils.getSetting(
+            client,
+            'nests_scanned',
+            client.config.discord.nests.scanned
+          ),
+    links:
+      client.discordUtils.argOption(args, 'links') !== null
+        ? client.discordUtils.argOption(args, 'links')
+        : await client.utils.getSetting(
+            client,
+            'nests_links',
+            client.config.discord.nests.links
+          ),
+    compare: client.discordUtils.argOption(args, 'compare'),
+  };
 
   const pleaseWait = await msg.reply('Please wait... Updating...');
 
-  client.nestUtils.getNestText(client).then(async (nests) => {
+  client.nestUtils.getNestText(client, options).then(async (nests) => {
     // do we have message ids?
     let update = args.length > 0 && args[0] == 'force' ? false : true;
     nests.forEach((n) => {
@@ -22,7 +35,7 @@ exports.run = async (client, msg, args) => {
       await client.asyncForEach(nests, async (n) => {
         if (n.messageId !== null) {
           let message = await nestChannel.fetchMessage(n.messageId);
-          if (links && n.nests && Array.isArray(n.nests)) {
+          if (options.links && n.nests && Array.isArray(n.nests)) {
             await message.edit(client.discordUtils.msgEmbed(n.text));
           } else {
             await message.edit(n.text);
@@ -42,7 +55,7 @@ exports.run = async (client, msg, args) => {
       // repost
       await client.asyncForEach(nests, async (m, i) => {
         let message = null;
-        if (links && m.nests && Array.isArray(m.nests)) {
+        if (options.links && m.nests && Array.isArray(m.nests)) {
           message = await nestChannel.send(
             client.discordUtils.msgEmbed(m.text)
           );
