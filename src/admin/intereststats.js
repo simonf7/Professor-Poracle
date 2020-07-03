@@ -19,7 +19,7 @@ exports.run = async (client, msg, args) => {
 
   const table = await client.gymUtils.getUserStats(
     client,
-    'dex_raidcreate',
+    'dex_interest',
     limit,
     days
   );
@@ -36,7 +36,7 @@ exports.run = async (client, msg, args) => {
     'r',
   ]);
 
-  await msg.channel.send('Raid channels created by trainers');
+  await msg.channel.send('Interest shown in raids by trainers');
   await client.asyncForEach(message, async (m) => {
     await msg.channel.send(m);
   });

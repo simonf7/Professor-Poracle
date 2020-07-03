@@ -114,7 +114,7 @@
     "jp": "ビードルBeedle",
     "cz": "獨角蟲 / 独角虫Dújiǎochóng",
     "type": ["Bug", "Poison"],
-    "shiny": false
+    "shiny": true
   },
   "14": {
     "de": "Kokuna",
@@ -2454,7 +2454,7 @@
     "jp": "タネボーTaneboh",
     "cz": "橡實果 / 橡实果Xiàngshíguǒ",
     "type": ["Grass"],
-    "shiny": false
+    "shiny": true
   },
   "274": {
     "de": "Blanas",
