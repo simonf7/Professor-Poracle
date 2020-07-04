@@ -10,6 +10,11 @@ module.exports = async (client, msg) => {
     return;
   }
 
+  // Look for role mentions
+  if (msg.content.match(/<@&([0-9]*)>/g)) {
+    client.discordUtils.processMentions(client, msg);
+  }
+
   // Ignore msgs not starting with the prefix (in config)
   if (!msg.content.startsWith(client.config.discord.prefix)) return;
 
