@@ -273,6 +273,25 @@ const argOption = (args, option) => {
   return null;
 };
 
+// go through any role mentions and add them to the database
+const processMentions = async (client, msg) => {
+  let regex = /<@&([0-9]*)>/gm;
+  let result = 0;
+
+  while ((result = regex.exec(msg.content))) {
+    let sql =
+      "INSERT INTO dex_mentions (channel_id, user_id, role_id) VALUES ('" +
+      msg.channel.id +
+      "','" +
+      msg.author.id +
+      "','" +
+      result[1] +
+      "')";
+
+    await client.pool.query(sql);
+  }
+};
+
 module.exports = {
   msgAdmin,
   msgEmbed,
@@ -283,4 +302,5 @@ module.exports = {
   processMeowthMessage,
   userSelect,
   argOption,
+  processMentions,
 };
