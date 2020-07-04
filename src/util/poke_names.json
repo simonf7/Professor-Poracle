@@ -2697,7 +2697,7 @@
     "jp": "エネコEneco",
     "cz": "向尾喵 / 向尾喵Xiàngwěimiāo",
     "type": ["Normal"],
-    "shiny": false
+    "shiny": true
   },
   "301": {
     "de": "Enekoro",
@@ -4668,7 +4668,7 @@
     "jp": "マメパトMamepato",
     "cz": "豆豆鴿 / 豆豆鸽Dòudòugē",
     "type": ["Normal", "Flying"],
-    "shiny": false
+    "shiny": true
   },
   "520": {
     "de": "Navitaub",
