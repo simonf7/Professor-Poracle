@@ -183,7 +183,22 @@ const _countQuery = async (client, source, idField, dateField, limit, days) => {
       stats = await client.pool.query(sql);
     }
 
-    return { rows: rows, stats: stats };
+    // get date the data comes from
+    let fromDate = null;
+    if (days <= 7) {
+      fromDate = moment(
+        moment()
+          .subtract(early ? days : days - 1, 'days')
+          .format('Y-MM-DD') + ' 00:00:00'
+      );
+    } else {
+      let sql = 'SELECT MIN(' + dateField + ') AS fromDate FROM ' + source;
+      const result = await client.pool.query(sql);
+      if (result) {
+        fromDate = moment(result[0].fromDate);
+      }
+    }
+    return { rows: rows, stats: stats, fromDate: fromDate };
   });
 };
 
@@ -244,7 +259,7 @@ const getGymStats = async (client, source, limit, days) => {
     table.push(data);
   });
 
-  return table;
+  return { table: table, fromDate: stats.fromDate };
 };
 
 const getUserStats = async (client, source, limit, days) => {
@@ -304,7 +319,7 @@ const getUserStats = async (client, source, limit, days) => {
     table.push(data);
   });
 
-  return table;
+  return { table: table, fromDate: stats.fromDate };
 };
 
 module.exports = {
