@@ -17,14 +17,14 @@ exports.run = async (client, msg, args) => {
     });
   }
 
-  const table = await client.gymUtils.getUserStats(
+  const stats = await client.gymUtils.getUserStats(
     client,
     'dex_raidcreate',
     limit,
     days
   );
 
-  const message = client.discordUtils.makeTable(table, [
+  const messages = client.discordUtils.makeTable(stats.table, [
     'l',
     'r',
     'r',
@@ -36,8 +36,11 @@ exports.run = async (client, msg, args) => {
     'r',
   ]);
 
-  await msg.channel.send('Raid channels created by trainers');
-  await client.asyncForEach(message, async (m) => {
+  await msg.channel.send(
+    'Raid channels created by trainers since ' +
+      stats.fromDate.format(client.config.general.dateformat)
+  );
+  await client.asyncForEach(messages, async (m) => {
     await msg.channel.send(m);
   });
 };
