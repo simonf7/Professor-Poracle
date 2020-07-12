@@ -140,7 +140,7 @@ const processMeowthMessage = async (client, msg) => {
             );
           }
         }
-
+      } else if (embed.footer) {
         regEx = /Hatches at (.* [PA]M)/gm;
         const hatches = regEx.exec(embed.footer.text);
         if (hatches && hatches[1]) {
@@ -192,7 +192,7 @@ const processMeowthMessage = async (client, msg) => {
           if (boss && boss[1]) {
             mon = boss[1];
           }
-          const id = discord.monsterUtils.getIdFromMon(clent, mon);
+          const id = client.monsterUtils.getIdFromMon(clent, mon);
           if (id > 0) {
             client.pool.query(
               'UPDATE dex_raidcreate SET `pokemon_id` = ' +
