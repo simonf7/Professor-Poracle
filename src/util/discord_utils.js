@@ -187,13 +187,18 @@ const processMeowthMessage = async (client, msg) => {
         // check for pokemon
         if (field.name == 'Boss') {
           let mon = field.value;
+          let form = 0;
           const regEx = /(.*) :/gm;
           const boss = regEx.exec(field.value);
           if (boss && boss[1]) {
             mon = boss[1];
           }
           console.log('Looking for: ' + mon);
-          const id = client.monsterUtils.getIdFromMon(client, mon);
+          const id = client.monsterUtils.getIdFromMon(
+            client,
+            mon.toLowerCase(),
+            form
+          );
           if (id > 0) {
             client.pool.query(
               'UPDATE dex_raidcreate SET `pokemon_id` = ' +
