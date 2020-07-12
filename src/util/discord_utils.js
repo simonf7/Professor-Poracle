@@ -192,7 +192,7 @@ const processMeowthMessage = async (client, msg) => {
           if (boss && boss[1]) {
             mon = boss[1];
           }
-          const id = client.monsterUtils.getIdFromMon(clent, mon);
+          const id = client.monsterUtils.getIdFromMon(client, mon);
           if (id > 0) {
             client.pool.query(
               'UPDATE dex_raidcreate SET `pokemon_id` = ' +
