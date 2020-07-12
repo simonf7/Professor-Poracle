@@ -146,8 +146,10 @@ const processMeowthMessage = async (client, msg) => {
         if (hatches && hatches[1]) {
           client.pool.query(
             "UPDATE dex_raidcreate SET `start` = '" +
-              moment().format('YYYY-MM-DD ') +
-              hatches[1] +
+              moment(
+                moment().format('YYYY-MM-DD') + ' ' + hatches[1],
+                'YYYY-MM-DD hh:mm A'
+              ).format('YYYY-MM-DD HH:mm:ss') +
               "' WHERE `channel_id` = '" +
               msg.channel.id +
               "'"
@@ -159,8 +161,10 @@ const processMeowthMessage = async (client, msg) => {
         if (ends && ends[1]) {
           client.pool.query(
             "UPDATE dex_raidcreate SET `end` = '" +
-              moment().format('YYYY-MM-DD ') +
-              ends[1] +
+              moment(
+                moment().format('YYYY-MM-DD') + ' ' + ends[1],
+                'YYYY-MM-DD hh:mm A'
+              ).format('YYYY-MM-DD HH:mm:ss') +
               "' WHERE `channel_id` = '" +
               msg.channel.id +
               "'"
