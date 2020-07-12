@@ -192,6 +192,7 @@ const processMeowthMessage = async (client, msg) => {
           if (boss && boss[1]) {
             mon = boss[1];
           }
+          console.log('Looking for: ' + mon);
           const id = client.monsterUtils.getIdFromMon(client, mon);
           if (id > 0) {
             client.pool.query(
