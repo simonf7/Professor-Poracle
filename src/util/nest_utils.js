@@ -100,7 +100,7 @@ const getNestText = async function (client, options = {}) {
       count += 1;
       if (count == 20 && !Array.isArray(options.ids)) {
         results.push({
-          text: text,
+          text: links ? client.discordUtils.msgEmbed(text) : text,
           messageId: messageIds.length == 1 ? messageIds[0] : null,
           nests: nests,
         });
@@ -114,7 +114,18 @@ const getNestText = async function (client, options = {}) {
       if (lastArea !== r.area_name) {
         text += '__**' + r.area_name + '**__\n';
       }
-      text += r.name + ': ';
+      if (links && r.lat && r.lon) {
+        text +=
+          '[' +
+          r.name +
+          '](https://pogonorwich.co.uk/?lat=' +
+          r.lat +
+          '&lon=' +
+          r.lon +
+          '&zoom=16): ';
+      } else {
+        text += r.name + ': ';
+      }
 
       nests.push({ id: r.id, message_id: r.message_id });
 
@@ -152,7 +163,7 @@ const getNestText = async function (client, options = {}) {
 
     if (text) {
       results.push({
-        text: text,
+        text: links ? client.discordUtils.msgEmbed(text) : text,
         messageId: messageIds.length == 1 ? messageIds[0] : null,
         nests: nests,
       });
