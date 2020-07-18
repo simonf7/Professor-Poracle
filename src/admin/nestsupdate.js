@@ -54,14 +54,7 @@ exports.run = async (client, msg, args) => {
 
       // repost
       await client.asyncForEach(nests, async (m, i) => {
-        let message = null;
-        if (options.links && m.nests && Array.isArray(m.nests)) {
-          message = await nestChannel.send(
-            client.discordUtils.msgEmbed(m.text)
-          );
-        } else {
-          message = await nestChannel.send(m.text);
-        }
+        let message = await nestChannel.send(m.text);
 
         // keep track of which messages a nest is in
         if (m.nests) {
