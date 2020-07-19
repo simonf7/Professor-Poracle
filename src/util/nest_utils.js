@@ -98,7 +98,10 @@ const getNestText = async function (client, options = {}) {
 
     rows.forEach((r) => {
       count += 1;
-      if (count == 10 && !Array.isArray(options.ids)) {
+      if (
+        (count == 10 && !Array.isArray(options.ids)) ||
+        (lastArea !== r.area_name && text !== '')
+      ) {
         results.push({
           text: links ? client.discordUtils.msgEmbed(text) : text,
           messageId: messageIds.length == 1 ? messageIds[0] : null,
