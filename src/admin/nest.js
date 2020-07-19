@@ -7,6 +7,9 @@ exports.run = async (client, msg, args) => {
       monId = 0;
     } else {
       monId = client.monsterUtils.getIdFromMon(client, pokemon, 0);
+      if (monId == 0) {
+        monId = -1;
+      }
     }
 
     if (monId >= 0) {
