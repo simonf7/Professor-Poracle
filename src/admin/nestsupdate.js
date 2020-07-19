@@ -35,11 +35,7 @@ exports.run = async (client, msg, args) => {
       await client.asyncForEach(nests, async (n) => {
         if (n.messageId !== null) {
           let message = await nestChannel.fetchMessage(n.messageId);
-          if (options.links && n.nests && Array.isArray(n.nests)) {
-            await message.edit(client.discordUtils.msgEmbed(n.text));
-          } else {
-            await message.edit(n.text);
-          }
+          await message.edit(n.text);
         }
       });
     } else {
@@ -74,7 +70,22 @@ exports.run = async (client, msg, args) => {
       });
     }
 
+    // tidy up messages
+    const fetched = await nestChannel.fetchMessages({ limit: 99 });
+    const others = fetched.filter(
+      (fetchedMsg) => fetchedMsg.author.id != client.user.id
+    );
+    others.forEach((m) => {
+      m.delete();
+    });
+
     pleaseWait.delete();
-    msg.reply(client.discordUtils.msgOk('Nests updated'));
+
+    msg.reply(client.discordUtils.msgOk('Nests updated')).then((message) => {
+      // auto delete the confirmation after 10 seconds
+      setTimeout(() => {
+        message.delete();
+      }, 10000);
+    });
   });
 };
