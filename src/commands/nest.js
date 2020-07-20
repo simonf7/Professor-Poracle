@@ -6,7 +6,7 @@ exports.run = async (client, msg, args) => {
     if (pokemon === 'clear' || pokemon === 'nothing') {
       monId = 0;
     } else {
-      monId = client.monsterUtils.getIdFromMon(client, pokemon, 0);
+      monId = client.monsterUtils.getIdFromMon(client, pokemon);
       if (monId == 0) {
         monId = -1;
       }
@@ -33,6 +33,7 @@ exports.run = async (client, msg, args) => {
                       "',NOW())"
                   )
                   .then((res) => {
+                    msg.react('✅');
                     msg
                       .reply(
                         client.discordUtils.msgOk(
