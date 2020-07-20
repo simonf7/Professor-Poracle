@@ -30,10 +30,10 @@ const getMonById = function (client, id) {
   return null;
 };
 
-const getIdFromMon = function (client, pokemon, form = 0) {
+const getIdFromMon = function (client, pokemon) {
   let monsters = Object.values(client.monsters).filter((mon) => {
     if (
-      mon.form.id == form &&
+      mon.form.id == 0 &&
       pokemon.length > 3 &&
       mon.name.toLowerCase().indexOf(pokemon) == 0
     ) {
