@@ -1,3 +1,5 @@
+const moment = require('moment'); // require
+
 const msgAdmin = async (client, msg) => {
   client.config.discord.admin.forEach((id) => {
     client.fetchUser(id, false).then((user) => {
@@ -111,14 +113,14 @@ const decodeMeowthText = async (client, text) => {
 const processMeowthMessage = async (client, msg) => {
   if (msg.embeds.length > 0) {
     msg.embeds.forEach((embed) => {
-      // log who created the channel
+      // log who created the channel, start and end times
       if (
         client.watching[msg.channel.id] &&
         client.watching[msg.channel.id].userId === null &&
         embed.footer
       ) {
-        const regEx = /by (.*) • /gm;
-        const search = regEx.exec(embed.footer.text);
+        let regEx = /by (.*) • /gm;
+        let search = regEx.exec(embed.footer.text);
 
         if (search && search[1]) {
           let reporter = client.discordUtils.findUser(client, search[1]);
@@ -138,49 +140,121 @@ const processMeowthMessage = async (client, msg) => {
             );
           }
         }
+      } else if (embed.footer) {
+        let regEx = /Hatches at (.* [PA]M)/gm;
+        const hatches = regEx.exec(embed.footer.text);
+        if (hatches && hatches[1]) {
+          client.pool.query(
+            "UPDATE dex_raidcreate SET `start` = '" +
+              moment(
+                moment().format('YYYY-MM-DD') + ' ' + hatches[1],
+                'YYYY-MM-DD hh:mm A'
+              ).format('YYYY-MM-DD HH:mm:ss') +
+              "' WHERE `channel_id` = '" +
+              msg.channel.id +
+              "'"
+          );
+        }
+
+        regEx = /Ends at (.* [PA]M)/gm;
+        const ends = regEx.exec(embed.footer.text);
+        if (ends && ends[1]) {
+          client.pool.query(
+            "UPDATE dex_raidcreate SET `end` = '" +
+              moment(
+                moment().format('YYYY-MM-DD') + ' ' + ends[1],
+                'YYYY-MM-DD hh:mm A'
+              ).format('YYYY-MM-DD HH:mm:ss') +
+              "' WHERE `channel_id` = '" +
+              msg.channel.id +
+              "'"
+          );
+        }
       }
 
-      // if the gym is recognised, notify everyones who's watching
-      if (client.watching[msg.channel.id].gymId === null) {
-        embed.fields.forEach(async (field) => {
-          if (field.name == 'Gym') {
-            const gymId = await client.gymUtils.findGym(client, field.value);
-            const gymName = await client.gymUtils.gymName(client, gymId);
+      embed.fields.forEach(async (field) => {
+        // check for the raid level
+        if (field.name == 'Raid Level') {
+          client.pool.query(
+            'UPDATE dex_raidcreate SET `level` = ' +
+              parseInt(field.value) +
+              " WHERE `channel_id` = '" +
+              msg.channel.id +
+              "'"
+          );
 
-            if (gymId != -1) {
-              console.log('Gym recognised: ' + gymName + ' (' + gymId + ')');
-              client.watching[msg.channel.id].gymId = gymId;
-              client.watching[msg.channel.id].gymName = gymName;
+          client.watching[msg.channel.id].raid = 'Level ' + field.value;
+        }
 
-              client.pool.query(
-                "UPDATE dex_raidcreate SET `gym_id` = '" +
-                  gymId +
-                  "' WHERE `channel_id` = '" +
-                  msg.channel.id +
-                  "'"
-              );
+        // check for pokemon
+        if (field.name == 'Boss') {
+          let mon = field.value;
+          const regEx = /(.*) :/gm;
+          const boss = regEx.exec(field.value);
+          if (boss && boss[1]) {
+            mon = boss[1];
+          }
+          console.log('Looking for: ' + mon);
+          const pokemon = client.monsterUtils.stringToMon(client, mon);
 
-              const results = await client.pool.query(
-                "SELECT user_id FROM dex_users WHERE gym_id='" + gymId + "'"
-              );
-              if (results.length > 0) {
-                let text =
-                  'Raid reported at ' + gymName + ' <#' + msg.channel.id + '>';
-                if (client.watching[msg.channel.id].userName) {
-                  text =
-                    text + ' by ' + client.watching[msg.channel.id].userName;
-                }
-                results.forEach((r) => {
-                  client.fetchUser(r.user_id, false).then((user) => {
-                    console.log('Notifying: ' + user.username);
-                    user.send(text);
-                  });
-                });
+          if (pokemon) {
+            client.pool.query(
+              'UPDATE dex_raidcreate SET `pokemon_id` = ' +
+                pokemon.id +
+                ', `form_id` = ' +
+                pokemon.form.id +
+                " WHERE `channel_id` = '" +
+                msg.channel.id +
+                "'"
+            );
+          }
+
+          client.watching[msg.channel.id].raid = mon;
+        }
+
+        // if the gym is recognised, notify everyones who's watching
+        if (
+          field.name == 'Gym' &&
+          client.watching[msg.channel.id].gymId === null
+        ) {
+          const gymId = await client.gymUtils.findGym(client, field.value);
+          const gymName = await client.gymUtils.gymName(client, gymId);
+
+          if (gymId != -1) {
+            console.log('Gym recognised: ' + gymName + ' (' + gymId + ')');
+            client.watching[msg.channel.id].gymId = gymId;
+            client.watching[msg.channel.id].gymName = gymName;
+
+            client.pool.query(
+              "UPDATE dex_raidcreate SET `gym_id` = '" +
+                gymId +
+                "' WHERE `channel_id` = '" +
+                msg.channel.id +
+                "'"
+            );
+
+            const results = await client.pool.query(
+              "SELECT user_id FROM dex_users WHERE gym_id='" + gymId + "'"
+            );
+            if (results.length > 0) {
+              let text = client.watching[msg.channel.id].raid
+                ? client.watching[msg.channel.id].raid + ' r'
+                : 'R';
+              text +=
+                'aid reported at ' + gymName + ' <#' + msg.channel.id + '>';
+              if (client.watching[msg.channel.id].userName) {
+                text = text + ' by ' + client.watching[msg.channel.id].userName;
               }
+              results.forEach((r) => {
+                client.fetchUser(r.user_id, false).then((user) => {
+                  console.log('Notifying: ' + user.username);
+                  user.send(text);
+                });
+              });
             }
           }
-        });
-      }
+        }
+      });
     });
   } else {
     let details = await decodeMeowthText(client, msg.content);

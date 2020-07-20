@@ -16,6 +16,7 @@ module.exports = async (client) => {
       gymName: null,
       userId: null,
       userName: null,
+      raid: null,
       userIds: [],
     };
     client.pool.query(
