@@ -141,7 +141,7 @@ const processMeowthMessage = async (client, msg) => {
           }
         }
       } else if (embed.footer) {
-        regEx = /Hatches at (.* [PA]M)/gm;
+        let regEx = /Hatches at (.* [PA]M)/gm;
         const hatches = regEx.exec(embed.footer.text);
         if (hatches && hatches[1]) {
           client.pool.query(
@@ -182,32 +182,34 @@ const processMeowthMessage = async (client, msg) => {
               msg.channel.id +
               "'"
           );
+
+          client.watching[msg.channel.id].raid = 'Level ' + field.value;
         }
 
         // check for pokemon
         if (field.name == 'Boss') {
           let mon = field.value;
-          let form = 0;
           const regEx = /(.*) :/gm;
           const boss = regEx.exec(field.value);
           if (boss && boss[1]) {
             mon = boss[1];
           }
           console.log('Looking for: ' + mon);
-          const id = client.monsterUtils.getIdFromMon(
-            client,
-            mon.toLowerCase(),
-            form
-          );
-          if (id > 0) {
+          const pokemon = client.monsterUtils.stringToMon(client, mon);
+
+          if (pokemon) {
             client.pool.query(
               'UPDATE dex_raidcreate SET `pokemon_id` = ' +
-                id +
+                pokemon.id +
+                ', `form_id` = ' +
+                pokemon.form.id +
                 " WHERE `channel_id` = '" +
                 msg.channel.id +
                 "'"
             );
           }
+
+          client.watching[msg.channel.id].raid = mon;
         }
 
         // if the gym is recognised, notify everyones who's watching
@@ -235,8 +237,11 @@ const processMeowthMessage = async (client, msg) => {
               "SELECT user_id FROM dex_users WHERE gym_id='" + gymId + "'"
             );
             if (results.length > 0) {
-              let text =
-                'Raid reported at ' + gymName + ' <#' + msg.channel.id + '>';
+              let text = client.watching[msg.channel.id].raid
+                ? client.watching[msg.channel.id].raid + ' r'
+                : 'R';
+              text +=
+                'aid reported at ' + gymName + ' <#' + msg.channel.id + '>';
               if (client.watching[msg.channel.id].userName) {
                 text = text + ' by ' + client.watching[msg.channel.id].userName;
               }

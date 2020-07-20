@@ -50,8 +50,56 @@ const getIdFromMon = function (client, pokemon) {
   return 0;
 };
 
+const stringToMon = function (client, pokemon) {
+  const words = pokemon.toLowerCase().split(' ');
+
+  const forms = words.filter((word) => word.match(/alola|galar/gi));
+
+  const names = words.filter((word) => !word.match(/alola|galar/gi));
+
+  if (forms.length == 0 && names.length == 0) {
+    return null;
+  }
+
+  let form =
+    forms.length > 0
+      ? forms[0].indexOf('alola') >= 0
+        ? 'alola'
+        : forms[0].indexOf('galar') >= 0
+        ? 'galarian'
+        : ''
+      : '';
+
+  if (form == '') {
+    let monsters = Object.values(client.monsters).filter(
+      (mon) =>
+        mon.form.id == 0 &&
+        names[0].length > 3 &&
+        mon.name.toLowerCase().indexOf(names[0]) == 0
+    );
+
+    if (monsters.length > 0) {
+      return monsters[0];
+    }
+  } else {
+    let monsters = Object.values(client.monsters).filter(
+      (mon) =>
+        mon.form.name.toLowerCase().indexOf(form) == 0 &&
+        names[0].length > 3 &&
+        mon.name.toLowerCase().indexOf(names[0]) == 0
+    );
+
+    if (monsters.length > 0) {
+      return monsters[0];
+    }
+  }
+
+  return null;
+};
+
 module.exports = {
   calculateCp,
   getMonById,
   getIdFromMon,
+  stringToMon,
 };
