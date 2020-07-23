@@ -68,7 +68,7 @@ const makeTable = (table, align = []) => {
 
 const findUser = (client, name) => {
   let user = client.users.find(
-    (user) => user.username.toLowerCase() === name.toLowerCase()
+    (u) => u.username.toLowerCase() === name.toLowerCase()
   );
 
   if (user === null) {
@@ -108,6 +108,32 @@ const decodeMeowthText = async (client, text) => {
   }
 
   return null;
+};
+
+const suggestTags = async (client, msg, gymId) => {
+  client.pool
+    .query(
+      "SELECT DISTINCT rc.gym_id, m.role_id FROM dex_raidcreate rc JOIN dex_mentions m ON m.channel_id = rc.channel_id WHERE rc.gym_id = '" +
+        gymId +
+        "'"
+    )
+    .then((results) => {
+      if (results.length > 0) {
+        let roles = [];
+        results.forEach((r) => {
+          let role = msg.guild.roles.get(r.role_id);
+          if (role) {
+            roles.push('`@' + role.name + '`');
+          }
+        });
+        if (roles.length > 0) {
+          let text =
+            "To see if there's interest, suggested tags you could use are:\n" +
+            roles.join('\n');
+          msg.channel.send(text);
+        }
+      }
+    });
 };
 
 const processMeowthMessage = async (client, msg) => {
@@ -256,6 +282,8 @@ const processMeowthMessage = async (client, msg) => {
                 });
               });
             }
+
+            suggestTags(client, msg, gymId);
           }
         }
       });
