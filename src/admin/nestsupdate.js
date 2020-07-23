@@ -24,7 +24,7 @@ exports.run = async (client, msg, args) => {
 
   client.nestUtils.getNestText(client, options).then(async (nests) => {
     // do we have message ids?
-    let update = args.length > 0 && args[0] == 'force' ? false : true;
+    let update = client.discordUtils.argOption(args, 'force') !== true;
     nests.forEach((n) => {
       if (n.messageId === null && n.nests !== null) {
         update = false;
@@ -70,10 +70,13 @@ exports.run = async (client, msg, args) => {
       });
     }
 
-    // tidy up messages
+    // tidy up messages - only delete commands
     const fetched = await nestChannel.fetchMessages({ limit: 99 });
     const others = fetched.filter(
-      (fetchedMsg) => fetchedMsg.author.id != client.user.id
+      (fetchedMsg) =>
+        fetchedMsg.author.id != client.user.id &&
+        (fetchedMsg.content.startsWith(client.config.discord.prefix) ||
+          client.discordUtils.argOption(args, 'tidy') === true)
     );
     others.forEach((m) => {
       m.delete();
