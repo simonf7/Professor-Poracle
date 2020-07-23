@@ -174,7 +174,11 @@ const processMeowthMessage = async (client, msg) => {
 
       embed.fields.forEach(async (field) => {
         // check for the raid level
-        if (field.name == 'Raid Level') {
+        if (
+          field.name == 'Raid Level' &&
+          client.watching[msg.channel.id].raid != 'Level ' + field.value
+        ) {
+          console.log('Raid level recognised: Level ' + field.value);
           client.pool.query(
             'UPDATE dex_raidcreate SET `level` = ' +
               parseInt(field.value) +
@@ -189,15 +193,15 @@ const processMeowthMessage = async (client, msg) => {
         // check for pokemon
         if (field.name == 'Boss') {
           let mon = field.value;
-          const regEx = /(.*) :/gm;
-          const boss = regEx.exec(field.value);
+          const regEx = /([a-zA-Z]+) [<:]/gm;
+          const boss = regEx.exec(mon);
           if (boss && boss[1]) {
             mon = boss[1];
           }
-          console.log('Looking for: ' + mon);
           const pokemon = client.monsterUtils.stringToMon(client, mon);
 
-          if (pokemon) {
+          if (pokemon && client.watching[msg.channel.id].raid != mon) {
+            console.log('Boss recognised: ' + mon + ' (' + pokemon.id + ')');
             client.pool.query(
               'UPDATE dex_raidcreate SET `pokemon_id` = ' +
                 pokemon.id +
