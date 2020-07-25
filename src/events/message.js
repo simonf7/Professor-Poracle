@@ -5,7 +5,7 @@ module.exports = async (client, msg) => {
       client.config.discord.meowth.indexOf(msg.author.id) >= 0 &&
       client.config.discord.categories.indexOf(msg.channel.parentID) >= 0
     ) {
-      channel.log('message');
+      console.log('message');
       client.discordUtils.processMeowthMessage(client, msg);
     }
     return;
