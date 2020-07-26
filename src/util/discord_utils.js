@@ -219,7 +219,7 @@ const processMeowthMessage = async (client, msg) => {
         // check for pokemon
         if (field.name == 'Boss') {
           let mon = field.value;
-          const regEx = /([a-zA-Z]+) [<:]/gm;
+          const regEx = /([a-zA-Z\(\).\-' ]+) [<:]/gm;
           const boss = regEx.exec(mon);
           if (boss && boss[1]) {
             mon = boss[1];

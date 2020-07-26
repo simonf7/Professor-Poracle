@@ -53,9 +53,10 @@ const getIdFromMon = function (client, pokemon) {
 const stringToMon = function (client, pokemon) {
   const words = pokemon.toLowerCase().split(' ');
 
-  const forms = words.filter((word) => word.match(/alola|galar/gi));
+  const regEx = /alola|galar|norm|orig|alter|defense|attack|speed/gi;
+  const forms = words.filter((word) => word.match(regEx));
 
-  const names = words.filter((word) => !word.match(/alola|galar/gi));
+  const names = words.filter((word) => !word.match(regEx));
 
   if (forms.length == 0 && names.length == 0) {
     return null;
