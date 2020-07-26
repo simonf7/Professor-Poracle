@@ -3,7 +3,7 @@ const moment = require('moment'); // require
 const msgAdmin = async (client, msg) => {
   client.config.discord.admin.forEach((id) => {
     client.fetchUser(id, false).then((user) => {
-      console.log('Notifying: ' + user.username);
+      console.log(msg.id + ' Notifying: ' + user.username);
       user.send(msg);
     });
   });
@@ -152,7 +152,12 @@ const processMeowthMessage = async (client, msg) => {
           let reporter = client.discordUtils.findUser(client, search[1]);
           if (reporter && reporter.id) {
             console.log(
-              'User recognised: ' + search[1] + ' (' + reporter.id + ')'
+              msg.id +
+                ' User recognised: ' +
+                search[1] +
+                ' (' +
+                reporter.id +
+                ')'
             );
             client.watching[msg.channel.id].userId = reporter.id;
             client.watching[msg.channel.id].userName = search[1];
@@ -204,7 +209,7 @@ const processMeowthMessage = async (client, msg) => {
           field.name == 'Raid Level' &&
           client.watching[msg.channel.id].raid != 'Level ' + field.value
         ) {
-          console.log('Raid level recognised: Level ' + field.value);
+          console.log(msg.id + ' Raid level recognised: Level ' + field.value);
           client.pool.query(
             'UPDATE dex_raidcreate SET `level` = ' +
               parseInt(field.value) +
@@ -227,7 +232,16 @@ const processMeowthMessage = async (client, msg) => {
           const pokemon = client.monsterUtils.stringToMon(client, mon);
 
           if (pokemon && client.watching[msg.channel.id].raid != mon) {
-            console.log('Boss recognised: ' + mon + ' (' + pokemon.id + ')');
+            console.log(
+              msg.id +
+                ' Boss recognised: ' +
+                mon +
+                ' (' +
+                pokemon.id +
+                '/' +
+                pokemon.form +
+                ')'
+            );
             client.pool.query(
               'UPDATE dex_raidcreate SET `pokemon_id` = ' +
                 pokemon.id +
@@ -251,7 +265,9 @@ const processMeowthMessage = async (client, msg) => {
           const gymName = await client.gymUtils.gymName(client, gymId);
 
           if (gymId != -1) {
-            console.log('Gym recognised: ' + gymName + ' (' + gymId + ')');
+            console.log(
+              msg.id + ' Gym recognised: ' + gymName + ' (' + gymId + ')'
+            );
             client.watching[msg.channel.id].gymId = gymId;
             client.watching[msg.channel.id].gymName = gymName;
 
@@ -277,7 +293,7 @@ const processMeowthMessage = async (client, msg) => {
               }
               results.forEach((r) => {
                 client.fetchUser(r.user_id, false).then((user) => {
-                  console.log('Notifying: ' + user.username);
+                  console.log(msg.id + ' Notifying: ' + user.username);
                   user.send(text);
                 });
               });
@@ -316,7 +332,7 @@ const processMeowthMessage = async (client, msg) => {
 
       client.watching[msg.channel.id].userIds.forEach((id) => {
         client.fetchUser(id, false).then((user) => {
-          console.log('Notifying: ' + user.username);
+          console.log(msg.id + ' Notifying: ' + user.username);
           user.send(text);
         });
       });
