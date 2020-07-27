@@ -239,7 +239,7 @@ const processMeowthMessage = async (client, msg) => {
                 ' (' +
                 pokemon.id +
                 '/' +
-                pokemon.form +
+                pokemon.form.id +
                 ')'
             );
             client.pool.query(
