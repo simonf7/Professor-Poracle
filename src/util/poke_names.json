@@ -897,7 +897,7 @@
     "jp": "ビリリダマBiriridama",
     "cz": "霹靂電球 / 霹雳电球Pīlìdiànqiú",
     "type": ["Electric"],
-    "shiny": false
+    "shiny": true
   },
   "101": {
     "de": "Lektrobal",
@@ -4740,7 +4740,7 @@
     "jp": "コロモリKoromori",
     "cz": "滾滾蝙蝠 / 滚滚蝙蝠Gǔngǔnbiānfú",
     "type": ["Psychic", "Flying"],
-    "shiny": false
+    "shiny": true
   },
   "528": {
     "de": "Fletiamo",
