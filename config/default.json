@@ -4,12 +4,22 @@
     "prefix": "!",
     "admin": [],
     "meowth": [],
-    "categories": []
+    "ignore_roles": [],
+    "categories": [],
+    "nests": {
+      "channel": "",
+      "scanned": false,
+      "migration": "2020-06-11",
+      "links": false
+    }
   },
   "database": {
     "host": "",
     "user": "",
     "password": "",
     "database": ""
+  },
+  "general": {
+    "dateformat": "dddd, Do MMMM YYYY"
   }
 }

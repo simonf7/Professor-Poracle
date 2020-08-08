@@ -401,16 +401,18 @@ const processMentions = async (client, msg) => {
   let result = 0;
 
   while ((result = regex.exec(msg.content))) {
-    let sql =
-      "INSERT INTO dex_mentions (channel_id, user_id, role_id) VALUES ('" +
-      msg.channel.id +
-      "','" +
-      msg.author.id +
-      "','" +
-      result[1] +
-      "')";
+    if (client.config.discord.ignore_roles.indexOf(result[1]) == -1) {
+      let sql =
+        "INSERT INTO dex_mentions (channel_id, user_id, role_id) VALUES ('" +
+        msg.channel.id +
+        "','" +
+        msg.author.id +
+        "','" +
+        result[1] +
+        "')";
 
-    await client.pool.query(sql);
+      await client.pool.query(sql);
+    }
   }
 };
 
