@@ -121,9 +121,11 @@ const suggestTags = async (client, msg, gymId) => {
       if (results.length > 0) {
         let roles = [];
         results.forEach((r) => {
-          let role = msg.guild.roles.get(r.role_id);
-          if (role) {
-            roles.push('`@' + role.name + '`');
+          if (client.config.discord.ignore_roles.indexOf(r.role_id) == -1) {
+            let role = msg.guild.roles.get(r.role_id);
+            if (role) {
+              roles.push('`@' + role.name + '`');
+            }
           }
         });
         if (roles.length > 0) {
@@ -401,18 +403,16 @@ const processMentions = async (client, msg) => {
   let result = 0;
 
   while ((result = regex.exec(msg.content))) {
-    if (client.config.discord.ignore_roles.indexOf(result[1]) == -1) {
-      let sql =
-        "INSERT INTO dex_mentions (channel_id, user_id, role_id) VALUES ('" +
-        msg.channel.id +
-        "','" +
-        msg.author.id +
-        "','" +
-        result[1] +
-        "')";
+    let sql =
+      "INSERT INTO dex_mentions (channel_id, user_id, role_id) VALUES ('" +
+      msg.channel.id +
+      "','" +
+      msg.author.id +
+      "','" +
+      result[1] +
+      "')";
 
-      await client.pool.query(sql);
-    }
+    await client.pool.query(sql);
   }
 };
 
