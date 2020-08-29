@@ -5,7 +5,8 @@ exports.run = async (client, msg, args) => {
     return;
   }
 
-  client.pool.query(
+  console.log('Friendcode: ' + msg.author.id + ' -> ' + friendCode[0]);
+  await client.pool.query(
     "INSERT INTO dex_friendcodes (`user_id`, `friend_code`) VALUES ('" +
       msg.author.id +
       "','" +
