@@ -214,7 +214,7 @@ const processMeowthMessage = async (client, msg) => {
           console.log(msg.id + ' Raid level recognised: Level ' + field.value);
           client.pool.query(
             'UPDATE dex_raidcreate SET `level` = ' +
-              parseInt(field.value) +
+              (field.value == 'Mega' ? 6 : parseInt(field.value)) +
               " WHERE `channel_id` = '" +
               msg.channel.id +
               "'"
