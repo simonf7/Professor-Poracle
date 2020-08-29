@@ -1,5 +1,5 @@
 exports.run = async (client, msg, args) => {
-  const friendCode = args.join('').match(/\d{16}/gm);
+  const friendCode = args.join('').match(/\d{12}/gm);
 
   if (!friendCode) {
     return;
