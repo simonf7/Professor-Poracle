@@ -85,7 +85,7 @@ const findUser = (client, name) => {
 };
 
 const decodeMeowthText = async (client, text) => {
-  const regEx = /(.*) (is .*|has .*)/g;
+  const regEx = /(.*) (is .*|has .*|needs .*)/g;
   const search = regEx.exec(text);
 
   if (search && search.length == 3) {
@@ -104,6 +104,8 @@ const decodeMeowthText = async (client, text) => {
       coming: search[2].indexOf('on the way') != -1,
       here: search[2].indexOf('at the raid') != -1,
       cancelled: search[2].indexOf('cancel') != -1,
+      invite: search[2].indexOf('invite') != -1,
+      remote: search[2].indexOf('remotely') != -1,
     };
   }
 
