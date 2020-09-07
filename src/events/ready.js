@@ -25,4 +25,20 @@ module.exports = async (client) => {
         "')"
     );
   });
+
+  setInterval(async () => {
+    const nestsUpdate = await client.utils.getSetting(
+      client,
+      'nests_update_required'
+    );
+
+    if (nestsUpdate && nestsUpdate == 'yes') {
+      const cmd = client.admin.get('nestsupdate');
+      if (cmd) {
+        await cmd.run(client, null, []);
+      }
+
+      client.utils.setSetting(client, 'nests_update_required', 'no');
+    }
+  }, 900000);
 };
