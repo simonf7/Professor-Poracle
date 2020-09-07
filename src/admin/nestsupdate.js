@@ -110,7 +110,7 @@ exports.run = async (client, msg, args) => {
       'nests_update_script'
     );
     if (updateScript) {
-      const output = execSync('ls', { encoding: 'utf-8' }); // the default is 'buffer'
+      const output = execSync(updateScript, { encoding: 'utf-8' }); // the default is 'buffer'
       console.log(updateScript, ' >\n', output);
     }
   });
