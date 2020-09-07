@@ -1,3 +1,5 @@
+const execSync = require('child_process').execSync;
+
 exports.run = async (client, msg, args) => {
   const nestChannel = client.channels.get(client.config.discord.nests.channel);
   const options = {
@@ -20,7 +22,12 @@ exports.run = async (client, msg, args) => {
     compare: client.discordUtils.argOption(args, 'compare'),
   };
 
-  const pleaseWait = await msg.reply('Please wait... Updating...');
+  let pleaseWait = null;
+  if (msg) {
+    pleaseWait = await msg.reply('Please wait... Updating...');
+  } else {
+    client.discordUtils.msgAdmin(client, 'Updating nests...');
+  }
 
   client.nestUtils.getNestText(client, options).then(async (nests) => {
     // do we have message ids?
@@ -82,13 +89,29 @@ exports.run = async (client, msg, args) => {
       m.delete();
     });
 
-    pleaseWait.delete();
+    if (pleaseWait) {
+      pleaseWait.delete();
 
-    msg.reply(client.discordUtils.msgOk('Nests updated')).then((message) => {
-      // auto delete the confirmation after 10 seconds
-      setTimeout(() => {
-        message.delete();
-      }, 10000);
-    });
+      msg.reply(client.discordUtils.msgOk('Nests updated')).then((message) => {
+        // auto delete the confirmation after 10 seconds
+        setTimeout(() => {
+          message.delete();
+        }, 10000);
+      });
+    } else {
+      client.discordUtils.msgAdmin(
+        client,
+        client.discordUtils.msgOk('Nests updated!')
+      );
+    }
+
+    const updateScript = await client.utils.getSetting(
+      client,
+      'nests_update_script'
+    );
+    if (updateScript) {
+      const output = execSync('ls', { encoding: 'utf-8' }); // the default is 'buffer'
+      console.log(updateScript, ' >\n', output);
+    }
   });
 };

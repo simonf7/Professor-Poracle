@@ -53,6 +53,18 @@ exports.run = async (client, msg, args) => {
                           message.delete();
                         }, 10000);
                       });
+
+                    client.utils
+                      .getSetting(client, 'nests_update_auto', 'no')
+                      .then((autoUpdate) => {
+                        if (autoUpdate == 'yes') {
+                          client.utils.setSetting(
+                            client,
+                            'nests_update_required',
+                            'yes'
+                          );
+                        }
+                      });
                   });
               });
           });

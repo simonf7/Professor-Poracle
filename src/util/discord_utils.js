@@ -3,7 +3,7 @@ const moment = require('moment'); // require
 const msgAdmin = async (client, msg) => {
   client.config.discord.admin.forEach((id) => {
     client.fetchUser(id, false).then((user) => {
-      console.log(msg.id + ' Notifying: ' + user.username);
+      console.log('Notifying: ' + user.username);
       user.send(msg);
     });
   });
