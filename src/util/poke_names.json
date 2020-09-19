@@ -1896,7 +1896,7 @@
     "jp": "ハリーセンHarysen",
     "cz": "千針魚 / 千针鱼Qiānzhēnyú",
     "type": ["Water", "Poison"],
-    "shiny": false
+    "shiny": true
   },
   "212": {
     "de": "Scherox",
