@@ -37,5 +37,41 @@
         }
       ]
     }
+  },
+  "help_raids": {
+    "embed": {
+      "fields": [
+        {
+          "value": "Mark yourself as interested",
+          "name": "`!i` or 🤔",
+          "inline": true
+        },
+        {
+          "value": "Mark yourself as coming",
+          "name": "`!c` or 🚗",
+          "inline": true
+        },
+        {
+          "value": "Mark yourself as here and ready",
+          "name": "`!h` or <:here:350686955316445185>",
+          "inline": true
+        },
+        {
+          "value": "Mark yourself as attending remotely",
+          "name": "`!remote` or 🛰️",
+          "inline": true
+        },
+        {
+          "value": "Mark yourself as invite needed",
+          "name": "`!invite` or ✉️",
+          "inline": true
+        },
+        {
+          "value": "Cancels your interest",
+          "name": "`!x` or ❌",
+          "inline": true
+        }
+      ]
+    }
   }
 }
