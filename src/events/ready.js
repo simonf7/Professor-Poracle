@@ -17,6 +17,7 @@ module.exports = async (client) => {
       userId: null,
       userName: null,
       raid: null,
+      message: null,
       userIds: [],
     };
     client.pool.query(

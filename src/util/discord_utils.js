@@ -130,11 +130,14 @@ const suggestTags = async (client, msg, gymId) => {
             }
           }
         });
-        if (roles.length > 0) {
+        if (
+          roles.length > 0 &&
+          client.watching[msg.channel.id].message === null
+        ) {
           let text =
             "To see if there's interest, suggested tags you could use are:\n" +
             roles.join('\n');
-          msg.channel.send(text);
+          client.watching[msg.channel.id].message = msg.channel.send(text);
         }
       }
     });
