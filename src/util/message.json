@@ -38,40 +38,61 @@
       ]
     }
   },
-  "help_raids": {
-    "embed": {
-      "fields": [
-        {
-          "value": "Mark yourself as interested",
-          "name": "`!i` or 🤔",
-          "inline": true
-        },
-        {
-          "value": "Mark yourself as coming",
-          "name": "`!c` or 🚗",
-          "inline": true
-        },
-        {
-          "value": "Mark yourself as here and ready",
-          "name": "`!h` or <:here:353933805217906698>",
-          "inline": true
-        },
-        {
-          "value": "Mark yourself as attending remotely",
-          "name": "`!remote` or 🛰️",
-          "inline": true
-        },
-        {
-          "value": "Mark yourself as invite needed",
-          "name": "`!invite` or ✉️",
-          "inline": true
-        },
-        {
-          "value": "Cancels your interest",
-          "name": "`!x` or ❌",
-          "inline": true
+  "help": {
+    "raidcreate": {
+      "description": "How to set up a raid",
+      "message": {
+        "embed": {
+          "description": "**Channel:** #raid-create\n\n:star: **Report a RAID EGG:**\n`!r <Level> <Location> <HatchTime>`\n*Example: `!r 5 Methodist church 15:23`*\n\n:star: **Report a RAID BOSS:** *(previously unreported)*\n`!r <Boss> <Location> <MinutesLeft>`\n*Example `!r Lugia Methodist church 36`*\n\n:star: **Update a HATCHED egg channel:**\nMeowth will say *\"This egg has hatched\" with a list of possible bosses.*\nUse the reactions to set the raid boss. (🇦 🇧 🇨 etc..)\n\n:star: **Correct a raid TIMER:**\n`!timerset <MinutesLeft>`"
         }
-      ]
+      }
+    },
+    "raiding": {
+      "description": "How to respond in a raid channel",
+      "message": {
+        "embed": {
+          "description": ":star: **Setting your status**\nUse the following commands/reactions to RSVP to a Raid.\n`!i` or 🤔 - Mark yourself as interested.\n`!c` or 🚗 - Mark yourself as coming.\n`!h` or <:here:353933805217906698> - Mark yourself as here & ready.\n`!remote` or 🛰️ - Mark yourself as attending remotely.\n`!invite` or ✉️ - Mark yourself as invite needed.\n`!x` or ❌ - Cancels your interest.\n\n:star: **More raid commands**\n`!list` - Shows the total interest for the raid.\n`!list invites` - Shows a list of users you can choose to invite.\n\n:star: **Starting a raid:**\n`!starting` or ▶️ - Starting lobby.\n`!backout` or ⏸️ - Quit lobby request.\n\n*(**Note:** `starting` informs the attendees you're starting the lobby & clears the `here/remote` list for the next group.)*"
+        }
+      }
+    },
+    "summary": {
+      "description": "Command summary for use in raid channels",
+      "message": {
+        "embed": {
+          "fields": [
+            {
+              "value": "Express interest",
+              "name": "`!i` or 🤔",
+              "inline": true
+            },
+            {
+              "value": "On the way to the gym",
+              "name": "`!c` or 🚗",
+              "inline": true
+            },
+            {
+              "value": "At the gym and ready",
+              "name": "`!h` or <:here:353933805217906698>",
+              "inline": true
+            },
+            {
+              "value": "Don't need an invite but will join remotely",
+              "name": "`!remote` or 🛰️",
+              "inline": true
+            },
+            {
+              "value": "Need an invite",
+              "name": "`!invite` or ✉️",
+              "inline": true
+            },
+            {
+              "value": "Cancel",
+              "name": "`!x` or ❌",
+              "inline": true
+            }
+          ]
+        }
+      }
     }
   }
 }
