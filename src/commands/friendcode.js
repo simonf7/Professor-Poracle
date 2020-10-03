@@ -18,5 +18,5 @@ exports.run = async (client, msg, args) => {
 };
 
 exports.aliases = () => {
-  return ['fc'];
+  return ['fc', 'trainercode', 'tc'];
 };
