@@ -55,6 +55,6 @@ module.exports = async (client) => {
 
         client.discordUtils.tidyChannel(channel);
       });
-    }, 120000);
+    }, 60000);
   }
 };
