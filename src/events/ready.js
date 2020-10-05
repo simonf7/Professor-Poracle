@@ -42,4 +42,19 @@ module.exports = async (client) => {
       client.utils.setSetting(client, 'nests_update_required', 'no');
     }
   }, 900000);
+
+  if (client.config.discord.tidy && client.config.discord.tidy.length > 0) {
+    await client.asyncForEach(client.config.discord.tidy, async (id) => {
+      const channel = await client.channels.get(id);
+      console.log('Tidying: ' + channel.name);
+    });
+
+    setInterval(async () => {
+      await client.asyncForEach(client.config.discord.tidy, async (id) => {
+        const channel = await client.channels.get(id);
+
+        client.discordUtils.tidyChannel(channel);
+      });
+    }, 60000);
+  }
 };

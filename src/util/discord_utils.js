@@ -421,6 +421,25 @@ const processMentions = async (client, msg) => {
   }
 };
 
+// delete expired notifications
+const tidyChannel = (channel) => {
+  channel.fetchMessages({ limit: 99 }).then((fetched) => {
+    fetched.forEach((msg) => {
+      if (msg.embeds.length > 0) {
+        msg.embeds.forEach((embed) => {
+          if (embed.footer) {
+            const elements = embed.footer.text.split(' ');
+            const endTime = moment(elements.pop(), 'HH:mm:ss');
+            if (endTime.isBefore()) {
+              msg.delete();
+            }
+          }
+        });
+      }
+    });
+  });
+};
+
 module.exports = {
   msgAdmin,
   msgEmbed,
@@ -432,4 +451,5 @@ module.exports = {
   userSelect,
   argOption,
   processMentions,
+  tidyChannel,
 };
