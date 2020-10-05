@@ -53,7 +53,11 @@ module.exports = async (client) => {
       await client.asyncForEach(client.config.discord.tidy, async (id) => {
         const channel = await client.channels.get(id);
 
-        client.discordUtils.tidyChannel(channel);
+        try {
+          client.discordUtils.tidyChannel(channel);
+        } catch (err) {
+          console.log(err.message);
+        }
       });
     }, 60000);
   }

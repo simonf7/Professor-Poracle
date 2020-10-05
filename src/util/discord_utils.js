@@ -425,20 +425,18 @@ const processMentions = async (client, msg) => {
 const tidyChannel = (channel) => {
   channel.fetchMessages({ limit: 20 }).then((fetched) => {
     fetched.forEach((msg) => {
-      try {
-        if (msg.embeds.length > 0) {
-          msg.embeds.forEach((embed) => {
-            if (embed.footer) {
-              const elements = embed.footer.text.split(' ');
-              const endTime = moment(elements.pop(), 'HH:mm:ss');
-              if (endTime.isBefore()) {
-                msg.delete();
-              }
+      if (msg.embeds.length > 0) {
+        msg.embeds.forEach((embed) => {
+          if (embed.footer) {
+            const elements = embed.footer.text.split(' ');
+            const endTime = moment(elements.pop(), 'HH:mm:ss');
+            if (endTime.isBefore()) {
+              msg.delete().catch((err) => {
+                // message already deleted
+              });
             }
-          });
-        }
-      } catch (err) {
-        console.log(err.message);
+          }
+        });
       }
     });
   });
