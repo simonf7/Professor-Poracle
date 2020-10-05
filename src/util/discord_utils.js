@@ -431,7 +431,11 @@ const tidyChannel = (channel) => {
             const elements = embed.footer.text.split(' ');
             const endTime = moment(elements.pop(), 'HH:mm:ss');
             if (endTime.isBefore()) {
-              msg.delete();
+              try {
+                msg.delete();
+              } catch (err) {
+                console.log(err.message);
+              }
             }
           }
         });
