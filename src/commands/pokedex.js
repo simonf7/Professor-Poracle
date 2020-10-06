@@ -4,6 +4,7 @@ const typeData = require('../../config/types.json');
 exports.run = async (client, msg, args) => {
   args = args.map((arg) => arg.replace(/alol.*/gi, 'formalola'));
   args = args.map((arg) => arg.replace(/gala.*/gi, 'formgalarian'));
+  args = args.map((arg) => arg.replace(/origi.*/gi, 'formorigin'));
 
   const formNames = args
     .filter((arg) => arg.match(/form\S/gi))

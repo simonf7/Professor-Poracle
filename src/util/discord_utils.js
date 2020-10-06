@@ -423,7 +423,7 @@ const processMentions = async (client, msg) => {
 
 // delete expired notifications
 const tidyChannel = (channel) => {
-  channel.fetchMessages({ limit: 20 }).then((fetched) => {
+  channel.fetchMessages({ limit: 99 }).then((fetched) => {
     fetched.forEach((msg) => {
       if (msg.embeds.length > 0) {
         msg.embeds.forEach((embed) => {
