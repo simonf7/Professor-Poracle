@@ -89,6 +89,11 @@
               "value": "Cancel",
               "name": "`!x` or ❌",
               "inline": true
+            },
+            {
+              "value": "List who has asked for an invite",
+              "name": "`!list invites`",
+              "inline": false
             }
           ]
         }
