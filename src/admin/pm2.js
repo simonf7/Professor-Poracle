@@ -9,8 +9,10 @@ exports.run = async (client, msg, args) => {
 
   try {
     const output = execSync(cmd, { encoding: 'utf-8' }); // the default is 'buffer'
-    msg.reply(client.discordUtils.msgEmbed(output));
+    msg.reply(client.discordUtils.msgEmbed('```' + output + '```'));
   } catch (err) {
-    msg.reply(client.discordUtils.msgEmbed(err.stderr.toString()));
+    msg.reply(
+      client.discordUtils.msgEmbed('```' + err.stderr.toString() + '```')
+    );
   }
 };
