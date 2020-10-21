@@ -437,6 +437,13 @@ const tidyChannel = (channel) => {
             }
           }
         });
+      } else if (
+        msg.content ==
+        'You have reached the limit of 20 messages over 30 seconds'
+      ) {
+        msg.delete().catch((err) => {
+          // message already deleted
+        });
       }
     });
   });
