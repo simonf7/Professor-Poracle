@@ -618,7 +618,7 @@
     "jp": "マダツボミMadatsubomi",
     "cz": "喇叭芽 / 喇叭芽Lǎbāyá",
     "type": ["Grass", "Poison"],
-    "shiny": false
+    "shiny": true
   },
   "70": {
     "de": "Ultrigaria",
