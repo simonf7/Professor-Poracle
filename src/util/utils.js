@@ -23,7 +23,14 @@ const setSetting = async (client, key, value) => {
   );
 };
 
+const deleteSetting = async (client, key) => {
+  return client.pool.query(
+    "DELETE FROM dex_settings WHERE `key` = '" + key + "'"
+  );
+};
+
 module.exports = {
   getSetting,
   setSetting,
+  deleteSetting,
 };

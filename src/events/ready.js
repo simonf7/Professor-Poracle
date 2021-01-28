@@ -1,3 +1,6 @@
+const dayjs = require('dayjs');
+const getTodayText = require('../util/calendar').getTodayText;
+
 module.exports = async (client) => {
   console.log(`Commando "${client.user.tag}" awaiting for orders!`);
   client.user.setPresence({
@@ -26,6 +29,30 @@ module.exports = async (client) => {
         "')"
     );
   });
+
+  setInterval(async () => {
+    const todayChannels = await client.utils.getSetting(
+      client,
+      'today_channels'
+    );
+    const todayNext = await client.utils.getSetting(client, 'today_next');
+
+    if (todayChannels && todayNext && dayjs().isAfter(dayjs(todayNext))) {
+      const text = await getTodayText();
+      const ids = todayChannels.split(' ');
+      await client.asyncForEach(ids, async (id) => {
+        const channel = await client.channels.get(id);
+        await client.discordUtils.deleteFromChannel(client, channel);
+        channel.send(client.discordUtils.msgEmbed(text));
+      });
+
+      client.utils.setSetting(
+        client,
+        'today_next',
+        dayjs(todayNext).add(6, 'hour').format('YYYY-MM-DD HH:mm:ss')
+      );
+    }
+  }, 3600000);
 
   setInterval(async () => {
     const nestsUpdate = await client.utils.getSetting(

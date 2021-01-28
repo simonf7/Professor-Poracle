@@ -9,30 +9,42 @@ const getToday = async () => {
   );
 
   if (events) {
-    let today = dayjs().hour(0).minute(0).second(0);
-    let tomorrow = today.add(1, 'day');
-    let day = today.day();
-    let saturday = dayjs()
+    const today = dayjs().hour(0).minute(0).second(0);
+    const tomorrow = today.add(1, 'day');
+    const day = today.day();
+    const saturday = today
       .add(6 - day, 'day')
       .hour(0)
       .second(0);
-    let sunday = saturday.add(1, 'day');
+    const sunday = saturday.add(1, 'day');
 
     // loop through events and log them
     for (const event of Object.values(events)) {
       if (event.type == 'VEVENT') {
-        let start = dayjs(event.start).hour(0).minute(0).second(0);
-        let end = dayjs(event.end).hour(23).minute(59).second(59);
+        let start = dayjs(event.start);
+        let end = dayjs(event.end);
         let length = end.diff(start, 'day') + 1;
         let dayNumber = today.diff(start, 'day') + 1;
         let range = '';
         let url = '';
         let when = '';
 
-        if (today >= start && today <= end) {
-          start = dayjs(event.start);
-          end = dayjs(event.end);
+        // handle weekly events
+        if (
+          event.rrule &&
+          event.rrule.options &&
+          event.rrule.options.freq == 2
+        ) {
+          while (start < today) {
+            start = start.add(event.rrule.options.interval, 'week');
+            end = end.add(event.rrule.options.interval, 'week');
+          }
+        }
 
+        if (
+          today >= start.hour(0).minute(0).second(0) &&
+          today <= end.hour(23).minute(59).second(59)
+        ) {
           switch (length) {
             case 1:
               range =
@@ -62,9 +74,6 @@ const getToday = async () => {
           }
           when = 'today';
         } else if (tomorrow.isSame(start, 'day')) {
-          start = dayjs(event.start);
-          end = dayjs(event.end);
-
           switch (length) {
             case 1:
               range =
@@ -79,9 +88,6 @@ const getToday = async () => {
           }
           when = 'tomorrow';
         } else if (saturday.isSame(start, 'day') && day > 0 && day < 5) {
-          start = dayjs(event.start);
-          end = dayjs(event.end);
-
           switch (length) {
             case 1:
               range =
@@ -101,9 +107,6 @@ const getToday = async () => {
           }
           when = 'weekend';
         } else if (sunday.isSame(start, 'day') && day > 0 && day < 6) {
-          start = dayjs(event.start);
-          end = dayjs(event.end);
-
           switch (length) {
             case 1:
               range =
@@ -120,7 +123,7 @@ const getToday = async () => {
           let matches = event.description.match(
             /https:\/\/pokemongolive.com\/.*\//gm
           );
-          if (matches.length) {
+          if (matches && matches.length) {
             url = matches[0];
           }
 
@@ -162,15 +165,11 @@ const getTodayText = async () => {
       text = text + '**__' + whenText[result.when] + '__**\n\n';
     }
 
-    text =
-      text +
-      '**' +
-      result.summary +
-      '**\n' +
-      result.range +
-      '\n' +
-      result.url +
-      '\n';
+    text = text + '**' + result.summary + '**\n' + result.range + '\n';
+
+    if (result.url) {
+      text = text + result.url + '\n';
+    }
 
     when = result.when;
   });

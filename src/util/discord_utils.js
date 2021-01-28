@@ -449,6 +449,18 @@ const tidyChannel = (channel) => {
   });
 };
 
+// delete own messages
+const deleteFromChannel = async (client, channel) => {
+  // delete the bots messages
+  const fetched = await channel.fetchMessages({ limit: 99 });
+  const mine = fetched.filter(
+    (fetchedMsg) => fetchedMsg.author.id == client.user.id
+  );
+  mine.forEach((m) => {
+    m.delete();
+  });
+};
+
 module.exports = {
   msgAdmin,
   msgEmbed,
@@ -461,4 +473,5 @@ module.exports = {
   argOption,
   processMentions,
   tidyChannel,
+  deleteFromChannel,
 };
