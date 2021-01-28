@@ -10,7 +10,13 @@ const getToday = async () => {
 
   if (events) {
     let today = dayjs().hour(0).minute(0).second(0);
-    let tomorrow = dayjs().add(1, 'day').hour(0).minute(0).second(0);
+    let tomorrow = today.add(1, 'day');
+    let day = today.day();
+    let saturday = dayjs()
+      .add(6 - day, 'day')
+      .hour(0)
+      .second(0);
+    let sunday = saturday.add(1, 'day');
 
     // loop through events and log them
     for (const event of Object.values(events)) {
@@ -21,6 +27,7 @@ const getToday = async () => {
         let dayNumber = today.diff(start, 'day') + 1;
         let range = '';
         let url = '';
+        let when = '';
 
         if (today >= start && today <= end) {
           start = dayjs(event.start);
@@ -53,6 +60,7 @@ const getToday = async () => {
                   range = 'Day ' + dayNumber + ' of ' + length;
               }
           }
+          when = 'today';
         } else if (tomorrow.isSame(start, 'day')) {
           start = dayjs(event.start);
           end = dayjs(event.end);
@@ -69,6 +77,43 @@ const getToday = async () => {
             default:
               range = 'Starts tomorrow at ' + start.format('h:mma');
           }
+          when = 'tomorrow';
+        } else if (saturday.isSame(start, 'day') && day > 0 && day < 5) {
+          start = dayjs(event.start);
+          end = dayjs(event.end);
+
+          switch (length) {
+            case 1:
+              range =
+                'Saturday between ' +
+                start.format('h:mma') +
+                ' and ' +
+                end.format('h:mma');
+              break;
+
+            case 2:
+              range =
+                'Saturday from ' +
+                start.format('h:mma') +
+                ' to Sunday at ' +
+                end.format('h:mma');
+              break;
+          }
+          when = 'weekend';
+        } else if (sunday.isSame(start, 'day') && day > 0 && day < 6) {
+          start = dayjs(event.start);
+          end = dayjs(event.end);
+
+          switch (length) {
+            case 1:
+              range =
+                'Sunday between ' +
+                start.format('h:mma') +
+                ' and ' +
+                end.format('h:mma');
+              break;
+          }
+          when = 'weekend';
         }
 
         if (range) {
@@ -80,18 +125,63 @@ const getToday = async () => {
           }
 
           eventArray.push({
+            start: event.start,
             summary: event.summary,
             range: range,
             url: url,
+            when: when,
           });
         }
       }
     }
   }
 
-  return eventArray;
+  // order the array
+  return eventArray.sort((a, b) => {
+    if (a.when == b.when) {
+      return a.start > b.start ? 1 : a.start < b.start ? -1 : 0;
+    }
+    return a.when.localeCompare(b.when);
+  });
+};
+
+const getTodayText = async () => {
+  const results = await getToday();
+
+  const whenText = {
+    today: 'TODAY',
+    tomorrow: 'TOMORROW',
+    weekend: 'THIS WEEKEND',
+  };
+
+  let text = '';
+  let when = '';
+  results.forEach((result) => {
+    text = text == '' ? '' : text + '\n';
+    if (result.when != when) {
+      text = text + '**__' + whenText[result.when] + '__**\n\n';
+    }
+
+    text =
+      text +
+      '**' +
+      result.summary +
+      '**\n' +
+      result.range +
+      '\n' +
+      result.url +
+      '\n';
+
+    when = result.when;
+  });
+  if (text == '') {
+    text = 'Nothing going on down today!';
+  }
+
+  return text;
 };
 
 module.exports = {
   getToday,
+  getTodayText,
 };

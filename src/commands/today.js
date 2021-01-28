@@ -1,25 +1,7 @@
-const getToday = require('../util/calendar').getToday;
+const getTodayText = require('../util/calendar').getTodayText;
 
 exports.run = async (client, msg, args) => {
-  const results = await getToday();
-
-  console.log('results');
-
-  let text = '';
-  results.forEach((result) => {
-    text =
-      (text == '' ? '' : text + '\n') +
-      '**' +
-      result.summary +
-      '**\n' +
-      result.range +
-      '\n' +
-      result.url +
-      '\n';
-  });
-  if (text == '') {
-    text = 'Nothing going on down today!';
-  }
+  const text = await getTodayText();
 
   msg.reply({ embed: { description: text } });
 };
