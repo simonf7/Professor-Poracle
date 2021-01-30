@@ -46,11 +46,14 @@ module.exports = async (client) => {
         channel.send(client.discordUtils.msgEmbed(text));
       });
 
-      client.utils.setSetting(
-        client,
-        'today_next',
-        dayjs(todayNext).add(6, 'hour').format('YYYY-MM-DD HH:mm:ss')
-      );
+      const hourGap = await client.utils.getSetting(client, 'today_gap');
+      if (hourGap) {
+        client.utils.setSetting(
+          client,
+          'today_next',
+          dayjs(todayNext).add(hourGap, 'hour').format('YYYY-MM-DD HH:mm:ss')
+        );
+      }
     }
   }, 3600000);
 
