@@ -23,8 +23,14 @@ const getToday = async () => {
       if (event.type == 'VEVENT') {
         let start = dayjs(event.start);
         let end = dayjs(event.end);
-        let length = end.diff(start, 'day') + 1;
-        let dayNumber = today.diff(start, 'day') + 1;
+        let length =
+          end
+            .hour(23)
+            .minute(59)
+            .second(59)
+            .diff(start.hour(0).minute(0).second(0), 'day') + 1;
+        let dayNumber =
+          today.diff(start.hour(0).minute(0).second(0), 'day') + 1;
         let range = '';
         let url = '';
         let when = '';
