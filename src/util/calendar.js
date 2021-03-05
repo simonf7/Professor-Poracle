@@ -1,7 +1,7 @@
 const ical = require('node-ical');
 const dayjs = require('dayjs');
 
-const getToday = async () => {
+const getToday = async (arg = null) => {
   let eventArray = [];
 
   const events = await ical.async.fromURL(
@@ -9,7 +9,11 @@ const getToday = async () => {
   );
 
   if (events) {
-    const today = dayjs().hour(0).minute(0).second(0);
+    let today = dayjs().hour(0).minute(0).second(0);
+    console.log(arg);
+    if (arg) {
+      today = dayjs(arg).hour(0).minute(0).second(0);
+    }
     const tomorrow = today.add(1, 'day');
     const day = today.day();
     const saturday = today
@@ -22,7 +26,7 @@ const getToday = async () => {
     for (const event of Object.values(events)) {
       if (event.type == 'VEVENT') {
         let start = dayjs(event.start);
-        let end = dayjs(event.end);
+        let end = event.end ? dayjs(event.end) : dayjs(event.start);
         let length =
           end
             .hour(23)
@@ -53,11 +57,15 @@ const getToday = async () => {
         ) {
           switch (length) {
             case 1:
-              range =
-                'Today between ' +
-                start.format('h:mma') +
-                ' and ' +
-                end.format('h:mma');
+              if (event.end) {
+                range =
+                  'Today between ' +
+                  start.format('h:mma') +
+                  ' and ' +
+                  end.format('h:mma');
+              } else {
+                range = 'Starts today at ' + start.format('h:mma');
+              }
               break;
 
             default:
@@ -82,11 +90,15 @@ const getToday = async () => {
         } else if (tomorrow.isSame(start, 'day')) {
           switch (length) {
             case 1:
-              range =
-                'Tomorrow between ' +
-                start.format('h:mma') +
-                ' and ' +
-                end.format('h:mma');
+              if (event.end) {
+                range =
+                  'Tomorrow between ' +
+                  start.format('h:mma') +
+                  ' and ' +
+                  end.format('h:mma');
+              } else {
+                range = 'Starts tomorrow at ' + start.format('h:mma');
+              }
               break;
 
             default:
@@ -154,8 +166,8 @@ const getToday = async () => {
   });
 };
 
-const getTodayText = async () => {
-  const results = await getToday();
+const getTodayText = async (arg = null) => {
+  const results = await getToday(arg);
 
   const whenText = {
     today: 'TODAY',
