@@ -68,12 +68,46 @@ const getNestText = async function (client, options = {}) {
   const links = options.links == true || options.links == 'true';
 
   let sql = '';
+  const lastMigration = (await getLastMigration(client)).format('YYYY/MM/DD');
+  const lastMigrationUTC = (await getLastMigration(client)).format('X');
+
   if (scanned) {
-    sql =
-      "SELECT dex_nests.id, dex_nests.name, if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, if(dex_nests.pokemon_id = 0, 'no', 'yes') as reported, if(dex_nests.pokemon_id = 0, if(nests.pokemon_id = 443, 0, nests.pokemon_id), dex_nests.pokemon_id) AS pokemon_id, nests.pokemon_id AS scanned_id, dex_nests.message_id, dex_areas.id AS area_id, dex_areas.name AS area_name FROM dex_nests LEFT JOIN dex_areas ON dex_areas.id = dex_nests.area_id LEFT JOIN nests ON nests.name = dex_nests.name";
+    sql = `SELECT 
+      dex_nests.id, 
+      dex_nests.name, 
+      if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, 
+      if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, 
+      if(if(dex_nests.last_update >= "${lastMigration}", dex_nests.pokemon_id, 0) = 0, 'no', 'yes') as reported, 
+      if(if(dex_nests.last_update >= "${lastMigration}", dex_nests.pokemon_id, 0) = 0, if(if(nests.updated >= ${lastMigrationUTC}, nests.pokemon_id, 0) = 443, 0, if(nests.updated >= ${lastMigrationUTC}, nests.pokemon_id, 0)), if(dex_nests.last_update >= "${lastMigration}", dex_nests.pokemon_id, 0)) AS pokemon_id, 
+      nests.pokemon_id AS scanned_id, 
+      dex_nests.message_id, 
+      dex_areas.id AS area_id, 
+      dex_areas.name AS area_name 
+    FROM 
+      dex_nests 
+        LEFT JOIN 
+          dex_areas ON dex_areas.id = dex_nests.area_id 
+        LEFT JOIN 
+          nests ON nests.name = dex_nests.name`;
   } else {
-    sql =
-      "SELECT dex_nests.id, dex_nests.name, if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, 'yes' as reported, dex_nests.pokemon_id AS pokemon_id, nests.pokemon_id AS scanned_id, dex_nests.message_id, dex_areas.id AS area_id, dex_areas.name AS area_name FROM dex_nests LEFT JOIN dex_areas ON dex_areas.id = dex_nests.area_id LEFT JOIN nests ON nests.name = dex_nests.name";
+    sql = `SELECT 
+      dex_nests.id, 
+      dex_nests.name, 
+      if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, 
+      if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, 
+      'yes' as reported, 
+      if(dex_nests.last_update >= "${lastMigration}", dex_nests.pokemon_id, 0) AS pokemon_id, 
+      nests.pokemon_id AS scanned_id, 
+      dex_nests.message_id, 
+      dex_areas.id AS area_id, 
+      dex_areas.name AS area_name, 
+      dex_nests.last_update 
+    FROM 
+      dex_nests 
+        LEFT JOIN 
+          dex_areas ON dex_areas.id = dex_nests.area_id 
+        LEFT JOIN 
+          nests ON nests.name = dex_nests.name`;
   }
   sql += ' ORDER BY dex_areas.sort, dex_areas.name, dex_nests.name';
 
@@ -208,7 +242,7 @@ const getNextMigration = async function (client) {
 };
 
 const getLastMigration = async function (client) {
-  return getNextMigration.add(-2, 'weeks');
+  return (await getNextMigration(client)).add(-2, 'weeks');
 };
 
 const getLastUpdate = async function (client) {
