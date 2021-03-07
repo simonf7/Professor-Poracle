@@ -71,14 +71,17 @@ const getNestText = async function (client, options = {}) {
   const lastMigration = (await getLastMigration(client)).format('YYYY/MM/DD');
   const lastMigrationUTC = (await getLastMigration(client)).format('X');
 
+  const dexSQL = `if(dex_nests.last_update >= "${lastMigration}", dex_nests.pokemon_id, 0)`;
+  const nestsSQL = `if(nests.updated >= ${lastMigrationUTC}, nests.pokemon_id, 0)`;
+
   if (scanned) {
     sql = `SELECT 
       dex_nests.id, 
       dex_nests.name, 
       if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, 
       if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, 
-      if(if(dex_nests.last_update >= "${lastMigration}", dex_nests.pokemon_id, 0) = 0, 'no', 'yes') as reported, 
-      if(if(dex_nests.last_update >= "${lastMigration}", dex_nests.pokemon_id, 0) = 0, if(if(nests.updated >= ${lastMigrationUTC}, nests.pokemon_id, 0) = 443, 0, if(nests.updated >= ${lastMigrationUTC}, nests.pokemon_id, 0)), if(dex_nests.last_update >= "${lastMigration}", dex_nests.pokemon_id, 0)) AS pokemon_id, 
+      if(${dexSQL} = 0, 'no', 'yes') as reported, 
+      if(${dexSQL} = 0, if(${nestsSQL} = 443, 0, ${nestsSQL}), ${dexSQL}) AS pokemon_id, 
       nests.pokemon_id AS scanned_id, 
       dex_nests.message_id, 
       dex_areas.id AS area_id, 
@@ -96,7 +99,7 @@ const getNestText = async function (client, options = {}) {
       if(isnull(dex_nests.lat), nests.lat, dex_nests.lat) AS lat, 
       if(isnull(dex_nests.lon), nests.lon, dex_nests.lon) AS lon, 
       'yes' as reported, 
-      if(dex_nests.last_update >= "${lastMigration}", dex_nests.pokemon_id, 0) AS pokemon_id, 
+      ${dexSQL} AS pokemon_id, 
       nests.pokemon_id AS scanned_id, 
       dex_nests.message_id, 
       dex_areas.id AS area_id, 
