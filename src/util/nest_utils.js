@@ -184,7 +184,7 @@ const getNestText = async function (client, options = {}) {
             text += ' :sparkles:';
           }
           if (scanned && r.reported == 'no') {
-            text += ' *(unconfirmed)*';
+            text += ' :question:';
           }
         }
         if (compare && r.scanned_id > 0) {
