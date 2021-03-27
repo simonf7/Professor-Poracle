@@ -183,8 +183,8 @@ const getNestText = async function (client, options = {}) {
           if (shiny) {
             text += ' :sparkles:';
           }
-          if (scanned && r.reported == 'no') {
-            text += ' :question:';
+          if (!scanned || r.reported != 'no') {
+            text += ' :white_check_mark:';
           }
         }
         if (compare && r.scanned_id > 0) {
