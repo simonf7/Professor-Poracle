@@ -1230,7 +1230,7 @@
     "jp": "ポリゴンPorygon",
     "cz": "多邊獸 / 多边兽Duōbiānshòu",
     "type": ["Normal"],
-    "shiny": false
+    "shiny": true
   },
   "138": {
     "de": "Amonitas",
@@ -2094,7 +2094,7 @@
     "jp": "ポリゴン２Porygon2",
     "cz": "多邊獸Ⅱ / 多边兽ⅡDuōbiānshòuII",
     "type": ["Normal"],
-    "shiny": false
+    "shiny": true
   },
   "234": {
     "de": "Damhirplex",
@@ -4263,7 +4263,7 @@
     "jp": "ポリゴンＺPorygon-Z",
     "cz": "多邊獸Ｚ / 多边兽ＺDuōbiānshòuZ",
     "type": ["Normal"],
-    "shiny": false
+    "shiny": true
   },
   "475": {
     "de": "Galagladi",

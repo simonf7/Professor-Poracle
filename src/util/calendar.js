@@ -4,8 +4,12 @@ const dayjs = require('dayjs');
 const getToday = async (arg = null) => {
   let eventArray = [];
 
+  //  const events = await ical.async.fromURL(
+  //    'https://calendar.google.com/calendar/ical/l7c9u0a3n2fsvl2kknmecvnp38%40group.calendar.google.com/public/basic.ics'
+  //  );
+
   const events = await ical.async.fromURL(
-    'https://calendar.google.com/calendar/ical/l7c9u0a3n2fsvl2kknmecvnp38%40group.calendar.google.com/public/basic.ics'
+    'https://calendar.google.com/calendar/ical/7k10p0us773fujdvf1ud4v3a0g%40group.calendar.google.com/public/basic.ics'
   );
 
   if (events) {
