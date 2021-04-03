@@ -1,5 +1,35 @@
 const ical = require('node-ical');
 const dayjs = require('dayjs');
+const fetch = require('node-fetch');
+
+const downloadJson = async (url, today) => {
+  const response = await fetch(url);
+  let eventJson = await response.json();
+  let eventData = [];
+
+  eventJson.forEach((event) => {
+    if (event.start) {
+      let start = dayjs(event.start);
+      let end = event.end ? dayjs(event.end) : dayjs(event.start);
+
+      if (end >= today) {
+        eventData.push({
+          start: start.format('YYYY-MM-DD HH:mm'),
+          end: end.format('YYYY-MM-DD HH:mm'),
+          summary: event.name,
+          link: null,
+          bonuses: event.bonuses.map((b) => {
+            return b.text;
+          }),
+          features: event.features,
+          type: event.type,
+        });
+      }
+    }
+  });
+
+  return eventData;
+};
 
 const downloadiCal = async (url, today) => {
   let eventData = [];
@@ -34,6 +64,20 @@ const downloadiCal = async (url, today) => {
             link = matches[0];
           }
 
+          let type = 'event';
+          if (event.summary.indexOf('Community Day') != -1) {
+            type = 'community-day';
+          }
+          if (event.summary.indexOf('Spotlight Hour') != -1) {
+            type = 'spotlight-hour';
+          }
+          if (event.summary.indexOf('Raid Hour') != -1) {
+            type = 'raid-hour';
+          }
+          if (event.summary.indexOf('5* Raids') != -1) {
+            type = 'raid-boss';
+          }
+
           eventData.push({
             start: start.format('YYYY-MM-DD HH:mm'),
             end: end.format('YYYY-MM-DD HH:mm'),
@@ -41,6 +85,7 @@ const downloadiCal = async (url, today) => {
             link: link,
             bonuses: [],
             features: [],
+            type: type,
           });
         }
       }
@@ -50,6 +95,47 @@ const downloadiCal = async (url, today) => {
   return eventData;
 };
 
+const mergeEvents = (events1, events2) => {
+  let merged = [];
+
+  events1.forEach((event) => {
+    let matches = events2.filter((e) => {
+      return (
+        event.start == e.start && event.end == e.end && event.type == e.type
+      );
+    });
+
+    let match = {};
+    if (matches.length > 0) {
+      match = matches.shift();
+    }
+
+    if (match) {
+      for (const [key, value] of Object.entries(event)) {
+        if (value === null) {
+          event[key] = match[key];
+        }
+      }
+    }
+
+    merged.push(event);
+  });
+
+  events2.forEach((event) => {
+    let matches = events1.filter((e) => {
+      return (
+        event.start == e.start && event.end == e.end && event.type == e.type
+      );
+    });
+
+    if (matches.length == 0) {
+      merged.push(event);
+    }
+  });
+
+  return merged;
+};
+
 const getToday = async (arg = null) => {
   let eventArray = [];
   let today = dayjs().hour(0).minute(0).second(0);
@@ -57,15 +143,22 @@ const getToday = async (arg = null) => {
     today = dayjs(arg).hour(0).minute(0).second(0);
   }
 
-  let events = await downloadiCal(
+  let iCalEvents = await downloadiCal(
     'https://calendar.google.com/calendar/ical/7k10p0us773fujdvf1ud4v3a0g%40group.calendar.google.com/public/basic.ics',
     today
   );
 
-  // let events = await downloadiCal(
+  // let iCalEvents = await downloadiCal(
   //   'https://calendar.google.com/calendar/ical/l7c9u0a3n2fsvl2kknmecvnp38%40group.calendar.google.com/public/basic.ics'
   //   today
   // );
+
+  let jsonEvents = await downloadJson(
+    'https://raw.githubusercontent.com/ccev/pogoinfo/v2/active/events.json',
+    today
+  );
+
+  let events = mergeEvents(jsonEvents, iCalEvents);
 
   if (events) {
     const tomorrow = today.add(1, 'day');
@@ -184,6 +277,8 @@ const getToday = async (arg = null) => {
           range: range,
           url: url,
           when: when,
+          bonuses: event.bonuses,
+          features: event.features,
         });
       }
     });
@@ -216,6 +311,12 @@ const getTodayText = async (arg = null) => {
     }
 
     text = text + '**' + result.summary + '**\n' + result.range + '\n';
+
+    if (result.bonuses) {
+      result.bonuses.forEach((bonus) => {
+        text = text + '- ' + bonus + '\n';
+      });
+    }
 
     if (result.url) {
       text = text + result.url + '\n';
