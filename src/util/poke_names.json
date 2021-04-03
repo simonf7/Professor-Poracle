@@ -348,7 +348,7 @@
     "jp": "プリンPurin",
     "cz": "胖丁 / 胖丁Pàngdīng",
     "type": ["Normal", "Fairy"],
-    "shiny": false
+    "shiny": true
   },
   "40": {
     "de": "Knuddeluff",
