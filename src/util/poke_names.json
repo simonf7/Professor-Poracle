@@ -708,7 +708,7 @@
     "jp": "ヤドンYadon",
     "cz": "呆呆獸 / 呆呆兽Dāidāishòu",
     "type": ["Water", "Psychic"],
-    "shiny": false
+    "shiny": true
   },
   "80": {
     "de": "Lahmus",
@@ -3759,7 +3759,7 @@
     "jp": "ブイゼルBuoysel",
     "cz": "泳圈鼬 / 泳圈鼬Yǒngquānyòu",
     "type": ["Water"],
-    "shiny": false
+    "shiny": true
   },
   "419": {
     "de": "Bojelin",
@@ -5010,7 +5010,7 @@
     "jp": "イシズマイIshizumai",
     "cz": "石居蟹 / 石居蟹Shíjūxiè",
     "type": ["Bug", "Rock"],
-    "shiny": false
+    "shiny": true
   },
   "558": {
     "de": "Castellith",
@@ -5928,7 +5928,7 @@
     "jp": "ホルビーHorubee",
     "cz": "掘掘兔 / 掘掘兔Juéjuétù",
     "type": ["Normal"],
-    "shiny": false
+    "shiny": true
   },
   "660": {
     "de": "Grebbit",
