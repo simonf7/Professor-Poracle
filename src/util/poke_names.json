@@ -1023,7 +1023,7 @@
     "jp": "モンジャラMonjara",
     "cz": "蔓藤怪 / 蔓藤怪Mànténgguài",
     "type": ["Grass"],
-    "shiny": false
+    "shiny": true
   },
   "115": {
     "de": "Kangama",
@@ -1743,7 +1743,7 @@
     "jp": "ウパーUpah",
     "cz": "烏波 / 乌波Wūbō",
     "type": ["Water", "Ground"],
-    "shiny": false
+    "shiny": true
   },
   "195": {
     "de": "Morlord",
