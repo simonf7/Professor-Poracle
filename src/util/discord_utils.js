@@ -74,6 +74,12 @@ const findUser = (client, name) => {
   if (user === null) {
     client.guilds.forEach((g) => {
       g.members.forEach((m) => {
+        if (
+          m.user.username &&
+          m.user.username.toLowerCase() === name.toLowerCase()
+        ) {
+          user = m.user;
+        }
         if (m.nickname && m.nickname.toLowerCase() === name.toLowerCase()) {
           user = m.user;
         }
@@ -82,6 +88,31 @@ const findUser = (client, name) => {
   }
 
   return user;
+};
+
+const findUsers = async (client, name) => {
+  let users = [];
+  let promises = [];
+  client.guilds.forEach((g) => {
+    let promise = g.fetchMembers().then((members) => {
+      members.members.forEach((m) => {
+        if (
+          m.user.bot === false &&
+          ((m.nickname &&
+            m.nickname.toLowerCase().indexOf(name.toLowerCase()) >= 0) ||
+            m.user.username.toLowerCase().indexOf(name.toLowerCase()) >= 0)
+        ) {
+          users.push(m);
+        }
+      });
+    });
+
+    promises.push(promise);
+  });
+
+  await Promise.all(promises);
+
+  return users;
 };
 
 const decodeMeowthText = async (client, text) => {
@@ -468,6 +499,7 @@ module.exports = {
   msgOk,
   makeTable,
   findUser,
+  findUsers,
   processMeowthMessage,
   userSelect,
   argOption,
