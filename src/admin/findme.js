@@ -4,8 +4,14 @@ exports.run = async (client, msg, args) => {
   const members = await client.discordUtils.findUsers(client, searchFor);
 
   if (members.length > 5) {
-    client.discordUtils.msgError(
-      'Sorry, too many matches for **' + searchFor + '** to list'
+    msg.reply(
+      client.discordUtils.msgError(
+        'Sorry, too many matches (' +
+          members.length +
+          ') for **' +
+          searchFor +
+          '** to list'
+      )
     );
   } else if (members.length > 0) {
     msg.reply(
